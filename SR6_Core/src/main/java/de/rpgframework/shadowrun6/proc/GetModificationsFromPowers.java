@@ -45,7 +45,7 @@ public class GetModificationsFromPowers implements ProcessingStep {
 				logger.log(Level.DEBUG, "add from power "+power.getId()+" / "+ref+" / dec="+ref.getDecisions());
 				logger.log(Level.DEBUG, "ToDo: "+power.getOutgoingModifications());
 				// Calculate modifications
-				ref.reset();
+				ref.clearOutgoingModifications();
 
 				int multiplier = ref.getModifiedValue(); //(ref.getModifyable().getMaxLevel()>1)?ref.getModifiedValue():1;
 //				if (multiplier==0) {
@@ -66,17 +66,8 @@ public class GetModificationsFromPowers implements ProcessingStep {
 						logger.log(Level.ERROR, "Problem calculating modifications for adept power: "+ref,e);
 					}
 				}
-
-
-
-				if (ref.getIncomingModifications()!=null && !ref.getIncomingModifications().isEmpty()) {
-					logger.log(Level.DEBUG, " - "+ref.getModifyable().getId()+" has modifications: "+ref.getIncomingModifications());
-					for (Modification mod : ref.getIncomingModifications()) {
-						mod.setSource(ref.getModifyable());
-					}
-//					logger.log(Level.DEBUG, " - add modifications: "+ref.getModifications());
-					unprocessed.addAll(ref.getIncomingModifications());
-				}
+				// Incoming modifications (e.g. levels from mentor spirits) have
+				// already been applied - don't emit them again
 			}
 		} finally {
 			logger.log(Level.TRACE,  "STOP : process() ends with "+unprocessed.size()+" modifications still to process");

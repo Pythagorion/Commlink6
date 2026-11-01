@@ -38,8 +38,8 @@
        	<itemmod type="QUALITY" ref="innate_talent"/>
    		<itemmod type="DRAIN_ADEPT" ref="INTUITION"/>
        <selmod uuid="d4400bf0-b64a-4209-875e-a6d2cb1bb2a9">
-			<checkmod type="SKILL" ref="CHOICE" choice="e26e2313-adf9-494e-82be-62387e0d4efd" what="REPLACE_WITH_WILD" value="1"/>
-       	<itemmod type="RULE" ref="MENTOR_SPIRIT_BOTH"/>
+			<checkmod type="SKILL" ref="CHOICE" choice="e26e2313-adf9-494e-82be-62387e0d4efd" what="REPLACE_WITH_WILD" value="1" id="fc64e152-318c-425d-aad3-5ce9de7e19b2"/>
+       	<itemmod type="RULE" ref="MENTOR_SPIRIT_BOTH" id="c111ed8c-0b14-4e82-9a2d-b01bbafd5bc1"/>
        </selmod>
      </modifications>
    </quality>
@@ -69,8 +69,8 @@
      <modifications>
         	<itemmod type="QUALITY" ref="innate_talent"/>
          <selmod uuid="fed1906b-51e9-481a-818f-1e63c6641b93">
-			 	<checkmod type="SKILL" ref="CHOICE" choice="e26e2313-adf9-494e-82be-62387e0d4efd" what="REPLACE_WITH_WILD" value="1"/>
-       		<itemmod type="RULE" ref="MENTOR_SPIRIT_BOTH"/>
+			 	<checkmod type="SKILL" ref="CHOICE" choice="e26e2313-adf9-494e-82be-62387e0d4efd" what="REPLACE_WITH_WILD" value="1" id="de7fce72-0ed9-49c5-9de0-f7f31fc77535"/>
+       		<itemmod type="RULE" ref="MENTOR_SPIRIT_BOTH" id="e1a80011-6845-4cfe-ad84-dce5c16b9346"/>
        	</selmod>
      </modifications>
    </quality>

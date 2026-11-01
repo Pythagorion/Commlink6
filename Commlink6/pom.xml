@@ -12,7 +12,7 @@
 
 	<groupId>de.rpgframework.shadowrun6</groupId>
 	<artifactId>commlink6</artifactId>
-	<version>1.15.0-SNAPSHOT</version>
+	<version>1.15.0</version>
 	<packaging>jar</packaging>
 
 	<name>Commlink6</name>
@@ -26,7 +26,7 @@
 		<javafx.plugin.version>0.0.8</javafx.plugin.version>
 		<client.plugin.version>1.0.25</client.plugin.version>
 		<attach.version>4.0.22</attach.version>
-		<rpgfw.version>5.6.0</rpgfw.version>
+		<rpgfw.version>5.6.1</rpgfw.version>
 	</properties>
 	<!-- Comment for no real purpose -->
 
@@ -293,7 +293,7 @@
 						<includeExtra>com.gluonhq.attach:display:4.0.19:desktop</includeExtra>
 						<includeExtra>com.gluonhq.attach:settings:4.0.19:desktop</includeExtra>
 						<includeExtra>com.gluonhq.attach:storage:4.0.19:desktop</includeExtra>
-						<includeExtra>de.rpgframework:attach-pdf-pdfbox:5.1.5</includeExtra>
+						<includeExtra>de.rpgframework:attach-pdf-pdfbox:${rpgfw.version}</includeExtra>
 						<includeExtra>org.apache.pdfbox:pdfbox:3.0.1</includeExtra>
 						<includeExtra>org.apache.pdfbox:pdfbox-io:3.0.1</includeExtra>
 						<includeExtra>commons-logging:commons-logging:1.2</includeExtra>

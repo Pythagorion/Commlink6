@@ -600,27 +600,24 @@
 		<attrdef id="AVAILABILITY" value="$RATING I"/>
    </item>
 
-   <!-- Echos and Streams  -->
+   <!-- Echos and Streams - Calculation of matrix attributes is hardcoded in Shadowrun6Tools.java  -->
    <item id="living_console" subtype="RIGGER_CONSOLE" type="ELECTRONICS" modonly="true">
 		<attrdef id="SOFTWARE_TYPES" value="RCC,AUTOSOFT"/>
 		<modifications>
+			<valmod type="HOOK" ref="ELECTRONIC_ACCESSORY" value="0"/>
 			<valmod type="HOOK" ref="SOFTWARE" value="$CONCURRENT_PROGRAMS"/>
 		</modifications>
 		<matrix programs="0" />
-		<attrdef id="DEVICE_RATING" value="$RESONANCE"/>
-		<attrdef id="NOISE_REDUCTION" value="$RESONANCE"/>
  		<flags><flag>MATRIX_DEVICE</flag></flags>
    </item>
 
    <item id="machinist_console" subtype="RIGGER_CONSOLE" type="ELECTRONICS" modonly="true">
 		<attrdef id="SOFTWARE_TYPES" value="RCC,AUTOSOFT"/>
 		<modifications>
+			<valmod type="HOOK" ref="ELECTRONIC_ACCESSORY" value="0"/>
 			<valmod type="HOOK" ref="SOFTWARE" value="$CONCURRENT_PROGRAMS"/>
 		</modifications>
 		<matrix />
-		<attrdef id="CONCURRENT_PROGRAMS" value="$CHARISMA"/>
-		<attrdef id="DEVICE_RATING" value="$RESONANCE"/>
-		<attrdef id="NOISE_REDUCTION" value="$WILLPOWER"/>
  		<flags><flag>MATRIX_DEVICE</flag></flags>
    </item>
 

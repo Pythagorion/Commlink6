@@ -65,9 +65,9 @@
                 </itemmod>
              <embed  type="GEAR" intoId="c12bf51f-7521-43bd-ba07-cf581a05c484" intoType="HOOK" intoRef="OPTICAL" ref="flare_compensation" />
              <embed  type="GEAR" intoId="c12bf51f-7521-43bd-ba07-cf581a05c484" intoType="HOOK" intoRef="OPTICAL" ref="image_link" />
-           <selmod>
-             <embed  type="GEAR" intoId="c12bf51f-7521-43bd-ba07-cf581a05c484" intoType="HOOK" intoRef="OPTICAL" ref="low_light_vision" />
-             <embed  type="GEAR" intoId="c12bf51f-7521-43bd-ba07-cf581a05c484" intoType="HOOK" intoRef="OPTICAL" ref="thermographic_vision" />
+           <selmod uuid="581ffd37-b608-4382-8163-1758e319a3ee">
+             <embed  type="GEAR" intoId="c12bf51f-7521-43bd-ba07-cf581a05c484" intoType="HOOK" intoRef="OPTICAL" ref="low_light_vision" id="37f58fca-d96c-489f-8844-31d8ceb6baf1" />
+             <embed  type="GEAR" intoId="c12bf51f-7521-43bd-ba07-cf581a05c484" intoType="HOOK" intoRef="OPTICAL" ref="thermographic_vision" id="0fc56f78-cb73-463a-89b4-d404f39dccb7" />
            </selmod>
          <itemmod type="GEAR" apply="CHARACTER" ref="micro-transceiver" />
          <itemmod type="GEAR" apply="CHARACTER" ref="sony_emporer" id="7b5ca366-2377-42e8-9317-d93523505a5f"/>
@@ -111,9 +111,9 @@
                 </itemmod>
              <embed  type="GEAR" intoId="49a400ab-3726-44be-b36e-c4348dc5fce9" intoType="HOOK" intoRef="OPTICAL" ref="flare_compensation" />
              <embed  type="GEAR" intoId="49a400ab-3726-44be-b36e-c4348dc5fce9" intoType="HOOK" intoRef="OPTICAL" ref="image_link" />
-           <selmod>
-             <embed  type="GEAR" intoId="49a400ab-3726-44be-b36e-c4348dc5fce9" intoType="HOOK" intoRef="OPTICAL" ref="low_light_vision" />
-             <embed  type="GEAR" intoId="49a400ab-3726-44be-b36e-c4348dc5fce9" intoType="HOOK" intoRef="OPTICAL" ref="thermographic_vision" />
+           <selmod uuid="c457ec99-1fe4-4e07-aec9-621cfbfbce83">
+             <embed  type="GEAR" intoId="49a400ab-3726-44be-b36e-c4348dc5fce9" intoType="HOOK" intoRef="OPTICAL" ref="low_light_vision" id="c7b117fe-1914-447c-90ce-6cc18a9c7c6d" />
+             <embed  type="GEAR" intoId="49a400ab-3726-44be-b36e-c4348dc5fce9" intoType="HOOK" intoRef="OPTICAL" ref="thermographic_vision" id="4e6d34fe-1b1e-411b-bdba-3ada138930b9" />
            </selmod>
          <itemmod type="GEAR" apply="CHARACTER" ref="chrysler-nissan_jackrabbit" id="e7938824-ea2b-458d-b364-ebe843a61313" />
              <embed  type="GEAR" intoId="e7938824-ea2b-458d-b364-ebe843a61313" intoType="HOOK" intoRef="SOFTWARE" ref="maneuvering">
@@ -220,9 +220,9 @@
                 </itemmod>
              <embed  type="GEAR" intoId="b5dc0a69-4aba-47c0-97eb-afb530f07041" intoType="HOOK" intoRef="OPTICAL" ref="flare_compensation" />
              <embed  type="GEAR" intoId="b5dc0a69-4aba-47c0-97eb-afb530f07041" intoType="HOOK" intoRef="OPTICAL" ref="image_link" />
-           <selmod>
-             <embed  type="GEAR" intoId="b5dc0a69-4aba-47c0-97eb-afb530f07041" intoType="HOOK" intoRef="OPTICAL" ref="low_light_vision" />
-             <embed  type="GEAR" intoId="b5dc0a69-4aba-47c0-97eb-afb530f07041" intoType="HOOK" intoRef="OPTICAL" ref="thermographic_vision" />
+           <selmod uuid="dd145f7e-4c80-4a24-a500-e8cc182ae7e6">
+             <embed  type="GEAR" intoId="b5dc0a69-4aba-47c0-97eb-afb530f07041" intoType="HOOK" intoRef="OPTICAL" ref="low_light_vision" id="c809d74b-3f5a-4554-ba97-bea4a902f529" />
+             <embed  type="GEAR" intoId="b5dc0a69-4aba-47c0-97eb-afb530f07041" intoType="HOOK" intoRef="OPTICAL" ref="thermographic_vision" id="fd0220e2-defe-4245-9f34-ca0efe1e5080" />
            </selmod>
          <itemmod type="GEAR" apply="CHARACTER" ref="earbuds" id="f7200ba0-8918-4428-83bb-1661256b4453">
                 <decision choice="c2d17c87-1cfe-4355-9877-a20fe09c170d" value="3"/>
@@ -376,9 +376,9 @@
                 </itemmod>
              <embed  type="GEAR" intoId="7ef8dd9e-2b0b-4aff-86c2-26984ab35d88" intoType="HOOK" intoRef="OPTICAL" ref="flare_compensation" />
              <embed  type="GEAR" intoId="7ef8dd9e-2b0b-4aff-86c2-26984ab35d88" intoType="HOOK" intoRef="OPTICAL" ref="image_link" />
-           <selmod>
-             <embed  type="GEAR" intoId="7ef8dd9e-2b0b-4aff-86c2-26984ab35d88" intoType="HOOK" intoRef="OPTICAL" ref="low_light_vision" />
-             <embed  type="GEAR" intoId="7ef8dd9e-2b0b-4aff-86c2-26984ab35d88" intoType="HOOK" intoRef="OPTICAL" ref="thermographic_vision" />
+           <selmod uuid="0a58d63b-5185-4060-b078-f568085b65ea">
+             <embed  type="GEAR" intoId="7ef8dd9e-2b0b-4aff-86c2-26984ab35d88" intoType="HOOK" intoRef="OPTICAL" ref="low_light_vision" id="38f2133e-4761-468f-a870-ed372e4a0490" />
+             <embed  type="GEAR" intoId="7ef8dd9e-2b0b-4aff-86c2-26984ab35d88" intoType="HOOK" intoRef="OPTICAL" ref="thermographic_vision" id="e0b97913-e0d4-47cb-ba4b-9925961029ec" />
            </selmod>
          <itemmod type="GEAR" apply="CHARACTER" ref="earbuds" id="6b64e43d-af89-4d90-a926-dd9e2c003bde">
                 <decision choice="c2d17c87-1cfe-4355-9877-a20fe09c170d" value="3"/>
@@ -1637,9 +1637,9 @@
                 </itemmod>
              <embed  type="GEAR" intoId="c12bf51f-7521-43bd-ba07-cf581a05c484" intoType="HOOK" intoRef="OPTICAL" ref="flare_compensation" />
              <embed  type="GEAR" intoId="c12bf51f-7521-43bd-ba07-cf581a05c484" intoType="HOOK" intoRef="OPTICAL" ref="image_link" />
-           <selmod>
-             <embed  type="GEAR" intoId="c12bf51f-7521-43bd-ba07-cf581a05c484" intoType="HOOK" intoRef="OPTICAL" ref="low_light_vision" />
-             <embed  type="GEAR" intoId="c12bf51f-7521-43bd-ba07-cf581a05c484" intoType="HOOK" intoRef="OPTICAL" ref="thermographic_vision" />
+           <selmod uuid="10ad8b20-998c-4428-9227-00f731b62913">
+             <embed  type="GEAR" intoId="c12bf51f-7521-43bd-ba07-cf581a05c484" intoType="HOOK" intoRef="OPTICAL" ref="low_light_vision" id="2edba0c2-f201-4a79-a16b-4c8f82dcc92c" />
+             <embed  type="GEAR" intoId="c12bf51f-7521-43bd-ba07-cf581a05c484" intoType="HOOK" intoRef="OPTICAL" ref="thermographic_vision" id="f48f35d5-6e63-4834-b1cf-eb8fbcff117b" />
            </selmod>
          <itemmod type="GEAR" apply="CHARACTER" ref="micro-transceiver" />
          <itemmod type="GEAR" apply="CHARACTER" ref="sony_emporer" id="31b66e28-b38d-4769-94ca-6f1dcd4b39e5"/>
@@ -1778,9 +1778,9 @@
                 </itemmod>
              <embed  type="GEAR" intoId="b5dc0a69-4aba-47c0-97eb-afb530f07041" intoType="HOOK" intoRef="OPTICAL" ref="flare_compensation" />
              <embed  type="GEAR" intoId="b5dc0a69-4aba-47c0-97eb-afb530f07041" intoType="HOOK" intoRef="OPTICAL" ref="image_link" />
-           <selmod>
-             <embed  type="GEAR" intoId="b5dc0a69-4aba-47c0-97eb-afb530f07041" intoType="HOOK" intoRef="OPTICAL" ref="low_light_vision" />
-             <embed  type="GEAR" intoId="b5dc0a69-4aba-47c0-97eb-afb530f07041" intoType="HOOK" intoRef="OPTICAL" ref="thermographic_vision" />
+           <selmod uuid="b31155ec-d320-4f49-8a4b-3b988ea5241e">
+             <embed  type="GEAR" intoId="b5dc0a69-4aba-47c0-97eb-afb530f07041" intoType="HOOK" intoRef="OPTICAL" ref="low_light_vision" id="b0468e3b-b33a-4bfc-94ff-1752278a4124" />
+             <embed  type="GEAR" intoId="b5dc0a69-4aba-47c0-97eb-afb530f07041" intoType="HOOK" intoRef="OPTICAL" ref="thermographic_vision" id="aa76d83a-073b-4389-9908-c2f796be72cd" />
            </selmod>
          <itemmod type="GEAR" apply="CHARACTER" ref="earbuds" id="f7200ba0-8918-4428-83bb-1661256b4453">
                 <decision choice="c2d17c87-1cfe-4355-9877-a20fe09c170d" value="3"/>
@@ -1940,9 +1940,9 @@
                 </itemmod>
              <embed  type="GEAR" intoId="7ef8dd9e-2b0b-4aff-86c2-26984ab35d88" intoType="HOOK" intoRef="OPTICAL" ref="flare_compensation" />
              <embed  type="GEAR" intoId="7ef8dd9e-2b0b-4aff-86c2-26984ab35d88" intoType="HOOK" intoRef="OPTICAL" ref="image_link" />
-           <selmod>
-             <embed  type="GEAR" intoId="7ef8dd9e-2b0b-4aff-86c2-26984ab35d88" intoType="HOOK" intoRef="OPTICAL" ref="low_light_vision" />
-             <embed  type="GEAR" intoId="7ef8dd9e-2b0b-4aff-86c2-26984ab35d88" intoType="HOOK" intoRef="OPTICAL" ref="thermographic_vision" />
+           <selmod uuid="0bf24fc9-99f5-44ba-a462-f7f1c8ee9698">
+             <embed  type="GEAR" intoId="7ef8dd9e-2b0b-4aff-86c2-26984ab35d88" intoType="HOOK" intoRef="OPTICAL" ref="low_light_vision" id="fb251663-bf7e-4a0d-bab7-f269b6744cc1" />
+             <embed  type="GEAR" intoId="7ef8dd9e-2b0b-4aff-86c2-26984ab35d88" intoType="HOOK" intoRef="OPTICAL" ref="thermographic_vision" id="fc1c7c96-d8f4-4908-8e2f-e58c04d546e9" />
            </selmod>
          <itemmod type="GEAR" apply="CHARACTER" ref="earbuds" id="6b64e43d-af89-4d90-a926-dd9e2c003bde">
                 <decision choice="c2d17c87-1cfe-4355-9877-a20fe09c170d" value="3"/>

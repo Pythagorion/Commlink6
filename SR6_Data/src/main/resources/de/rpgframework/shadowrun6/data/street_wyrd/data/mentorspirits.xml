@@ -112,8 +112,8 @@
     	</magician>
     	<adept>
       	<selmod uuid="25d96a27-33d4-4540-8ec6-2ab82d983a2b">
-    			<itemmod type="ADEPT_POWER" ref="empathic_sense"/>
-    			<itemmod type="ADEPT_POWER" ref="enthralling_performance"/>
+    			<itemmod type="ADEPT_POWER" ref="empathic_sense" id="dc75fc76-2047-4eb8-a4da-9871360d1f20"/>
+    			<itemmod type="ADEPT_POWER" ref="enthralling_performance" id="9ed39ee1-d25f-407b-b86f-45ffd6399e00"/>
 	  		</selmod>
     	</adept>
   </mentorspirit>
@@ -167,8 +167,8 @@
     </magician>
     <adept>
       <selmod uuid="abe1ba17-cd19-4d8d-9443-bef9f897d567">
-    		<itemmod type="ADEPT_POWER" ref="animal_empathy"/>
-    		<itemmod type="ADEPT_POWER" ref="empathic_sense"/>
+    		<itemmod type="ADEPT_POWER" ref="animal_empathy" id="2c391f96-570e-4375-8573-de57c051d30b"/>
+    		<itemmod type="ADEPT_POWER" ref="empathic_sense" id="4ed1b881-702f-4dff-ba55-8bde4f2179fc"/>
       </selmod>
     </adept>
   </mentorspirit>

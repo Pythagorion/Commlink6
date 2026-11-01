@@ -21,6 +21,7 @@ import de.rpgframework.shadowrun.chargen.charctrl.IFocusController;
 import de.rpgframework.shadowrun.chargen.charctrl.IRejectReasons;
 import de.rpgframework.shadowrun6.Shadowrun6Character;
 import de.rpgframework.shadowrun6.Shadowrun6Core;
+import de.rpgframework.shadowrun6.Shadowrun6Tools;
 import de.rpgframework.shadowrun6.chargen.charctrl.ControllerImpl;
 import de.rpgframework.shadowrun6.chargen.charctrl.SR6CharacterController;
 import de.rpgframework.shadowrun6.chargen.charctrl.SR6RejectReasons;
@@ -100,6 +101,11 @@ public class SR6CommonFocusController extends ControllerImpl<Focus> implements I
 			return poss;
 
 		Shadowrun6Character model = getModel();
+
+		// Some foci are restricted to certain magic types
+		poss = Shadowrun6Tools.areRequirementsMet(model, value, decisions);
+		if (!poss.get())
+			return poss;
 
 		/*
 		 * General rules: (CRB 154)

@@ -653,6 +653,7 @@ public class ItemTemplate extends PieceOfGear<SR6VariantMode,SR6UsageMode,SR6Pie
 	 * @return the type
 	 * @deprecated Use getItemType(CarryMode)
 	 */
+	@Deprecated
 	public ItemType getItemType() {
 		return type;
 	}
@@ -693,6 +694,7 @@ public class ItemTemplate extends PieceOfGear<SR6VariantMode,SR6UsageMode,SR6Pie
 	 * @return the subtype
 	 * @deprecated Use getItemSubtype(CarryMode)
 	 */
+	@Deprecated
 	public ItemSubType getItemSubtype() {
 		return subtype;
 	}

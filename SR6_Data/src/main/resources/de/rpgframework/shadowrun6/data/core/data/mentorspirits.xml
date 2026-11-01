@@ -101,7 +101,7 @@
 			<checkmod type="SKILL" ref="conjuring" value="-1" what="EDGE_BOOST" cond="1" />
 		</magician>
 		<adept>
-			<valmod type="ADEPT_POWER" ref="rapid_healing" value="1" />
+			<valmod type="ADEPT_POWER" ref="combat_sense" value="1" />
 		</adept>
 	</mentorspirit>
 

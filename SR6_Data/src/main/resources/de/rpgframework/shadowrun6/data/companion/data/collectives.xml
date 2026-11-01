@@ -32,8 +32,8 @@
 			</itemmod>
 			<itemmod type="QUALITY" ref="CHOICE" choice="d92f1c31-874e-419d-9b14-b8eaad476784"/>
 			<selmod uuid="d92f1c31-874e-419d-9b14-b8eaad476784">
-				<itemmod type="QUALITY" ref="feathers"/>
-				<itemmod type="QUALITY" ref="unusual_hair"/>
+				<itemmod type="QUALITY" ref="feathers" id="551f7917-2845-4787-b0ab-f969aa8b97b1"/>
+				<itemmod type="QUALITY" ref="unusual_hair" id="6c6a9713-4bcb-4a8a-abe1-22ba8aabdf72"/>
 			</selmod>
 		</modifications>
 	</set>

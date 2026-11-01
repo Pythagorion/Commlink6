@@ -418,7 +418,7 @@ public class LibraryPage extends Page {
 		try {
 			FilteredListPage<ItemTemplate> page =new FilteredListPage<ItemTemplate>(
 					ResourceI18N.get(LibraryPage.RES, "category.gear"),
-					() -> Shadowrun6Core.getItemList(ItemTemplate.class),
+					() -> Shadowrun6Core.getItemList(ItemTemplate.class).stream().filter(item -> !item.isModOnly()).collect(Collectors.toList()),
 					new ItemTemplatePane(
 							Shadowrun6Tools.requirementResolver(Locale.getDefault()),
 							null

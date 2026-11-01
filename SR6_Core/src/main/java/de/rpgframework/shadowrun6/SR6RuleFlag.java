@@ -33,7 +33,6 @@ public enum SR6RuleFlag implements RuleFlag {
 	MENTOR_SPIRIT_BOTH,
 	/* Use CHA for defense rating */
 	CHARISMATIC_DEFENSE,
-	MENTOR_SPIRIT_BOTH_ADVANTAGES,
 	ADD_2_TWO_LOWEST_CYBERJACK_ATTRIBUTES,
 	/** Discount of 2 Karma for martial arts or technique */
 	MARTIAL_ARTS_PRODIGY,

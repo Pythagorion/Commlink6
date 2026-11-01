@@ -162,9 +162,10 @@ public class ApplyModificationsGeneric implements ProcessingStep {
 						|| tmp.getReferenceType()==ShadowrunReference.SPELL
 						) {
 					try {
+						MagicOrResonanceType oldMoR = model.getMagicOrResonanceType();
 						if (!applyModification(model, tmp)) {
 							unprocessed.add(tmp);
-						} else if (tmp.getReferenceType()==ShadowrunReference.MAGIC_RESO) {
+						} else if (tmp.getReferenceType()==ShadowrunReference.MAGIC_RESO && model.getMagicOrResonanceType()!=oldMoR) {
 							logger.log(Level.WARNING, "TODO: Reapply modifications from magic/reso: {0} ",model.getMagicOrResonanceType().getOutgoingModifications());
 							System.err.println("TODO: Reapply modifications from magic/reso "+model.getMagicOrResonanceType().getOutgoingModifications());
 							unprocessed.addAll(model.getMagicOrResonanceType().getOutgoingModifications());
@@ -474,7 +475,14 @@ public class ApplyModificationsGeneric implements ProcessingStep {
 			logger.log(Level.ERROR, "Cannot apply modification " + mod + " - no such magic_reso {0}", mod.getKey());
 			return false;
 		}
-		
+		// Types only granted by modifications (e.g. minor_awakened) only replace mundane,
+		// never a magic or resonance type chosen by the player
+		MagicOrResonanceType current = model.getMagicOrResonanceType();
+		if (item.isModOnly() && current!=null && !current.isMundane()) {
+			logger.log(Level.INFO, "Don''t change magic/resonance type {0} to {1} from {2}", current, item, mod.getSource());
+			return true;
+		}
+
 		model.setMagicOrResonanceType(item);
 		logger.log(Level.INFO, "Changed magic/resonance type to {0}", item);
 
@@ -521,6 +529,17 @@ public class ApplyModificationsGeneric implements ProcessingStep {
 		QualityValue value = model.getQuality(mod.getKey(), mod.getId());
 		if (item == null) {
 			logger.log(Level.ERROR, "Cannot apply modification " + mod + " - no such quality {0}", mod.getKey());
+		}
+		// remove="true" - effects of the quality are suppressed in BuildForbiddenSources,
+		// so here it is only important not to add the quality
+		if (mod.isRemove()) {
+			logger.log(Level.INFO, "Quality {0} is removed by {1}", mod.getKey(), mod.getSource());
+			return true;
+		}
+		// Don't auto-add a quality that something else removes (e.g. orthoskin replaces the dermal deposits of trolls)
+		if (value == null && item != null && model.isForbiddenSource(item)) {
+			logger.log(Level.INFO, "Don't add quality {0} from {1} - it is removed by other modification", mod.getKey(), mod.getSource());
+			return true;
 		}
 
 		logger.log(Level.INFO, "Add {0} with decisions {1}",mod,mod.getDecisions());

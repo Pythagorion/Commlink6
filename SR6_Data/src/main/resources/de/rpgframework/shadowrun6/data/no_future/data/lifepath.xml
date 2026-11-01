@@ -21,22 +21,22 @@
       <valmod type="CREATION_POINTS" ref="CONTACT_POINTS" value="4" />
       <allowmod type="CONTACT_TYPES" ref="CORPORATE" />
       <allowmod type="CONTACT_TYPES" ref="MEDIA" />
-      <selmod>
-        <itemmod type="SKILL" ref="knowledge">
+      <selmod uuid="e590abd2-4417-44a1-b95b-bd8eb836ee67">
+        <itemmod type="SKILL" ref="knowledge" id="9e082be1-5db9-403f-8c33-da1971a0c26c">
           <decision choice="c700b37d-f770-49cd-81f4-63d332290b64" value="i18n.musical_genre" />
         </itemmod>
-        <itemmod type="SKILL" ref="knowledge">
+        <itemmod type="SKILL" ref="knowledge" id="95daf2cb-4201-460e-b97d-641b36e3479b">
           <decision choice="946af37a-bf54-44d5-81cb-52c06911e226" value="i18n.dance_style" />
         </itemmod>
       </selmod>
-      <selmod>
-        <itemmod type="SKILL" ref="knowledge">
+      <selmod uuid="e17162ef-1b0e-4a6e-b323-8cf3caf1f846">
+        <itemmod type="SKILL" ref="knowledge" id="1a5bc7cf-ccd4-4dc0-8715-56d43a123af4">
           <decision choice="0c22d375-61ac-4bd2-972c-03a48b54d014" value="i18n.entertainment_media" />
         </itemmod>
-        <itemmod type="SKILL" ref="knowledge">
+        <itemmod type="SKILL" ref="knowledge" id="ecc659f5-7cb9-474a-ad4d-7fc9c5395a95">
           <decision choice="7d33c4ec-86d2-4133-aa48-fa1fa1b9923f" value="i18n.fashion" />
         </itemmod>
-        <valmod type="SKILL" ref="language" value="2" />
+        <valmod type="SKILL" ref="language" value="2" id="25b24dde-212e-4e17-9e4b-2444a8c20b19" />
       </selmod>
     </modifications>
   </lifemod>

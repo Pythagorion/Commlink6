@@ -1,0 +1,128 @@
+# Port of the deployment part of bitbucket-pipelines.yml
+#
+# build -> Development (automatic) -> Staging (approval) -> Production (approval)
+#
+# The "manual trigger" of Bitbucket is emulated with GitHub Environments:
+# the environments "Staging" and "Production" must be configured with
+# "Required reviewers" in Settings > Environments. The job then waits until
+# a reviewer clicks "Review deployments" > "Approve and deploy".
+
+name: Build and Deploy
+
+on:
+  push:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+env:
+  DEPLOY_HOST: ${{ vars.DEPLOY_HOST || 'eden.rpgframework.de' }}
+  DEPLOY_USER: ${{ vars.DEPLOY_USER || 'bitbucket' }}
+  REMOTE_BASE: /var/www/html/commlink6-updates
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+    - name: Set up JDK 17
+      uses: actions/setup-java@v6
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+    # Creates Commlink6/target/commlink6-<version>-complete.jar and, via the
+    # update4j-plugin, Commlink6/target/config.xml (still containing STABILITY)
+    - name: Build with Maven
+      run: mvn -U -B -s settings.xml clean install -Dgpg.skip -DskipTests
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v7
+      with:
+        name: commlink6
+        path: |
+          Commlink6/target/commlink6-*complete.jar
+          Commlink6/target/config.xml
+        if-no-files-found: error
+        retention-days: 30
+
+  deploy-development:
+    name: Deploy to Development
+    needs: build
+    runs-on: ubuntu-latest
+    environment: Development
+    # Uploads run one after another and are never interrupted
+    concurrency:
+      group: deploy-development
+      cancel-in-progress: false
+    steps:
+    - uses: actions/download-artifact@v8
+      with:
+        name: commlink6
+        path: Commlink6/target
+    - name: Set up SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_deploy
+        echo "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+        chmod 600 ~/.ssh/id_deploy ~/.ssh/known_hosts
+    - name: Upload via SCP
+      run: |
+        sed -i 's/STABILITY/develop/g' Commlink6/target/config.xml
+        SCP="scp -B -i $HOME/.ssh/id_deploy"
+        $SCP Commlink6/target/config.xml "$DEPLOY_USER@$DEPLOY_HOST:$REMOTE_BASE/develop/"
+        $SCP Commlink6/target/commlink6*complete.jar "$DEPLOY_USER@$DEPLOY_HOST:$REMOTE_BASE/"
+
+  deploy-staging:
+    name: Deploy to Staging
+    needs: deploy-development
+    runs-on: ubuntu-latest
+    environment: Staging
+    # A newer build replaces an older one still waiting for approval
+    concurrency:
+      group: deploy-staging
+      cancel-in-progress: true
+    steps:
+    - uses: actions/download-artifact@v8
+      with:
+        name: commlink6
+        path: Commlink6/target
+    - name: Set up SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_deploy
+        echo "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+        chmod 600 ~/.ssh/id_deploy ~/.ssh/known_hosts
+    - name: Upload via SCP
+      run: |
+        sed -i 's/STABILITY/testing/g' Commlink6/target/config.xml
+        SCP="scp -B -i $HOME/.ssh/id_deploy"
+        $SCP Commlink6/target/config.xml "$DEPLOY_USER@$DEPLOY_HOST:$REMOTE_BASE/testing/"
+        $SCP Commlink6/target/commlink6*complete.jar "$DEPLOY_USER@$DEPLOY_HOST:$REMOTE_BASE/"
+
+  deploy-production:
+    name: Deploy to Production
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    environment: Production
+    # A newer build replaces an older one still waiting for approval
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: true
+    steps:
+    - uses: actions/download-artifact@v8
+      with:
+        name: commlink6
+        path: Commlink6/target
+    - name: Set up SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_deploy
+        echo "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+        chmod 600 ~/.ssh/id_deploy ~/.ssh/known_hosts
+    - name: Upload via SCP
+      run: |
+        ls Commlink6/target
+        sed -i 's/STABILITY/stable/g' Commlink6/target/config.xml
+        SCP="scp -B -i $HOME/.ssh/id_deploy"
+        $SCP Commlink6/target/config.xml "$DEPLOY_USER@$DEPLOY_HOST:$REMOTE_BASE/stable/"
+        $SCP Commlink6/target/commlink6*complete.jar "$DEPLOY_USER@$DEPLOY_HOST:$REMOTE_BASE/stable/"

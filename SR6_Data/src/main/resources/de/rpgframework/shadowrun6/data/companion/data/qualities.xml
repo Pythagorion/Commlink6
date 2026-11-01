@@ -2,6 +2,7 @@
 <qualities>
 
 	<!-- Positive qualities -->
+    <quality id="astral_perception" karma="0" pos="true" type="NORMAL" selectable="n"/>
 
 	<quality id="augmentation_acclimation" karma="2" pos="true" type="NORMAL" max="10">
 		<requires>

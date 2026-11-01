@@ -25,7 +25,7 @@
 		<log4j.version>2.26.1</log4j.version>
 		<maven.compiler.release>17</maven.compiler.release>
 		<revision>0.0.3-SNAPSHOT</revision>
-		<rpgfw.version>5.6.0</rpgfw.version>
+		<rpgfw.version>5.6.1</rpgfw.version>
 		<maven.deploy.skip>false</maven.deploy.skip>
 	</properties>
 
@@ -163,6 +163,12 @@
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.16.0</version>
+				<configuration>
+					<compilerArgs>
+						<!-- Don't warn about the terminal digit in "shadowrun6" -->
+						<arg>-Xlint:-module</arg>
+					</compilerArgs>
+				</configuration>
 			</plugin>
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>

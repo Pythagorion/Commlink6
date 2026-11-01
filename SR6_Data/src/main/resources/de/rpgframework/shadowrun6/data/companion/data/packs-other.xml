@@ -361,44 +361,44 @@
              <embed  type="GEAR" intoId="65c73adb-a277-407a-8ffd-ce3fca27ada8" intoType="HOOK" intoRef="SENSOR_HOUSING" ref="single_sensor" id="3c36f8d1-3b26-49af-b315-ffc0c57e56fd">
                 <decision choice="c2d17c87-1cfe-4355-9877-a20fe09c170d" value="3"/>
                 </embed>
-           <selmod>
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="atmosphere_sensor" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="geiger_counter" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="olfactory_sensor" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="cyberware_scanner" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="mad_scanner" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="motion_sensor" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="ultrasound" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="omni_directional_microphone_function" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="directional_microphone" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="laser_range_finder" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="laser_microphone" />
+           <selmod uuid="95a553ce-80fb-46c9-bb41-085e0a0ac50a">
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="atmosphere_sensor" id="cca0b67b-c57f-4e34-855b-5035dcaea65d" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="geiger_counter" id="bb26781f-5d3b-4d3b-a3fe-727ee6c29720" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="olfactory_sensor" id="181101bf-184d-483d-8957-bd417b65775f" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="cyberware_scanner" id="ca2577ba-2abc-4f0e-ab63-cbf9ee028077" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="mad_scanner" id="a8ea9faa-e37e-4a94-a474-76786f601311" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="motion_sensor" id="ef61ec7a-5ca2-4c5c-b224-3e410ef33bc5" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="ultrasound" id="78d2adcb-a4ae-4090-830c-c1fbee8e0034" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="omni_directional_microphone_function" id="7edcd3b9-e6b4-43c1-b52d-bb084a67214b" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="directional_microphone" id="cc187a2f-23f2-4f4f-ac59-b53d5ecd0fc3" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="laser_range_finder" id="6d85fc91-2721-4cf3-bc3f-9f84220efdea" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="laser_microphone" id="2a4c96fa-93a2-4c41-829c-676b46f2d22b" />
            </selmod>
-           <selmod>
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="atmosphere_sensor" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="geiger_counter" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="olfactory_sensor" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="cyberware_scanner" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="mad_scanner" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="motion_sensor" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="ultrasound" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="omni_directional_microphone_function" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="directional_microphone" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="laser_range_finder" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="laser_microphone" />
+           <selmod uuid="53e9d304-0863-4a55-bd0b-4d48e1a75589">
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="atmosphere_sensor" id="97ce1aea-11fb-4d37-aac1-393d85f254ed" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="geiger_counter" id="f4e74fe1-d4e4-438d-83a1-a2d9af76b985" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="olfactory_sensor" id="b1bde71e-0893-4a37-883d-dad813d9e7d6" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="cyberware_scanner" id="523cac4b-bf8b-49bc-bf94-8a4017e087b8" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="mad_scanner" id="c9719b3d-0c73-4e38-bfcb-55d152a3c8ed" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="motion_sensor" id="107b71da-c0ed-46d4-a50c-191aa19367ca" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="ultrasound" id="5a0cadd3-ccd2-49db-a6a5-7d637413f8e0" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="omni_directional_microphone_function" id="8d87f1ad-16fd-48bd-88c2-4df899917aff" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="directional_microphone" id="a83923a3-4968-43b5-9499-32b8a38b1e37" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="laser_range_finder" id="961fc953-aba6-4cc1-9da8-f3ae57b846c1" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="laser_microphone" id="d16aedec-a1a9-4dfb-87ee-97076e2ace74" />
            </selmod>
-           <selmod>
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="atmosphere_sensor" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="geiger_counter" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="olfactory_sensor" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="cyberware_scanner" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="mad_scanner" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="motion_sensor" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="ultrasound" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="omni_directional_microphone_function" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="directional_microphone" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="laser_range_finder" />
-             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="laser_microphone" />
+           <selmod uuid="5d91fe3a-bdb7-4476-b9a3-16001e986c43">
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="atmosphere_sensor" id="d47e6405-c137-45c5-b278-6e4fbd5715f5" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="geiger_counter" id="d8b16756-9361-4e90-926e-b4249d28c5d0" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="olfactory_sensor" id="11be38e9-54e8-4a80-8c1d-e22aceb8527d" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="cyberware_scanner" id="bf161feb-f524-4fb6-9f8c-bbe1be292675" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="mad_scanner" id="f9b47321-9f49-420c-9b4d-94d9bb4b6a7f" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="motion_sensor" id="fbd2ce3c-c3ee-4b64-9d2e-60ba50673ac0" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="ultrasound" id="de698a7e-530e-43b1-833a-dd2ad768bb5d" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="omni_directional_microphone_function" id="b0219845-5694-4fd1-810b-6eb55d0b402a" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="directional_microphone" id="81d7241d-6404-4b57-ac64-45ca3a055d62" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="laser_range_finder" id="06e0fc68-46df-47f5-9071-4d3bc5436ba7" />
+             <embed  type="GEAR" intoId="3c36f8d1-3b26-49af-b315-ffc0c57e56fd" intoType="HOOK" intoRef="SENSOR_FUNCTION" ref="laser_microphone" id="b1b229d5-7424-4feb-88a0-77efbba63229" />
            </selmod>
       </modifications>
    </item>

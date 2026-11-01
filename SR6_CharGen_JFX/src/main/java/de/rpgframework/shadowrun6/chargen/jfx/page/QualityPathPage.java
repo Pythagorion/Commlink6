@@ -20,7 +20,6 @@ import de.rpgframework.jfx.RPGFrameworkJavaFX;
 import de.rpgframework.shadowrun6.QualityPathStep;
 import de.rpgframework.shadowrun6.QualityPathStepValue;
 import de.rpgframework.shadowrun6.QualityPathValue;
-import de.rpgframework.shadowrun6.Shadowrun6Character;
 import de.rpgframework.shadowrun6.Shadowrun6Tools;
 import de.rpgframework.shadowrun6.chargen.charctrl.SR6CharacterController;
 import de.rpgframework.shadowrun6.chargen.jfx.SR6CharacterViewLayout;
@@ -140,7 +139,6 @@ public class QualityPathPage extends Page {
 
 	//-------------------------------------------------------------------
 	public void refresh() {
-		Shadowrun6Character model = control.getModel();
 		for (CheckBox box : checkBoxes) {
 			QualityPathStep step = (QualityPathStep)box.getUserData();
 			QualityPathStepValue taken = selected.getStepTaken(step);
@@ -148,7 +146,7 @@ public class QualityPathPage extends Page {
 			if (box.isSelected()) {
 				box.setDisable(!control.getQualityPathController().canBeDeselected(selected, taken).get());
 			} else {
-				box.setDisable(!control.getQualityPathController().canBeSelected(selected, step, null).get());
+				box.setDisable(!control.getQualityPathController().canBeSelected(selected, step).get());
 			}
 		}
 	}

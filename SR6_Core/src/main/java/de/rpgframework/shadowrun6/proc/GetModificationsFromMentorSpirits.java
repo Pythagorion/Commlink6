@@ -8,14 +8,17 @@ import java.util.List;
 import de.rpgframework.character.ProcessingStep;
 import de.rpgframework.genericrpg.data.Choice;
 import de.rpgframework.genericrpg.data.Decision;
+import de.rpgframework.genericrpg.data.GenericRPGTools;
 import de.rpgframework.genericrpg.modification.DataItemModification;
 import de.rpgframework.genericrpg.modification.Modification;
+import de.rpgframework.genericrpg.modification.ModificationChoice;
 import de.rpgframework.shadowrun.MagicOrResonanceType;
 import de.rpgframework.shadowrun.MentorSpirit;
 import de.rpgframework.shadowrun.Quality;
 import de.rpgframework.shadowrun.QualityValue;
 import de.rpgframework.shadowrun6.SR6RuleFlag;
 import de.rpgframework.shadowrun6.Shadowrun6Character;
+import de.rpgframework.shadowrun6.Shadowrun6Core;
 
 /**
  * @author prelle
@@ -59,13 +62,43 @@ public class GetModificationsFromMentorSpirits implements ProcessingStep {
 						// Build a non-common modification list
 						List<Modification> allMods = new ArrayList<>();
 						MagicOrResonanceType type = model.getMagicOrResonanceType();
+						boolean useMagician = type.usesSpells();
+						boolean useAdept    = type.usesPowers();
+						// Mystic adepts decide whether to use magician or adept advantages
+						Decision advantages = val.getDecision(QualityValue.MENTOR_SPIRIT_ADVANTAGES);
+						if (useMagician && useAdept && advantages!=null) {
+							MagicOrResonanceType chosen = Shadowrun6Core.getItem(MagicOrResonanceType.class, advantages.getValue());
+							if (chosen!=null) {
+								useMagician = chosen.usesSpells();
+								useAdept    = chosen.usesPowers();
+							} else {
+								logger.log(Level.ERROR, "Unknown mentor spirit advantages ''{0}''", advantages.getValue());
+							}
+						}
+						// Some qualities grant both advantages
+						if ((useMagician || useAdept) && model.hasRuleFlag(SR6RuleFlag.MENTOR_SPIRIT_BOTH)) {
+							useMagician = true;
+							useAdept    = true;
+						}
 						// Magician modifications
-						if (type.usesSpells() || (type.usesPowers() && model.hasRuleFlag(SR6RuleFlag.MENTOR_SPIRIT_BOTH))) {
+						if (useMagician) {
 							allMods.addAll(mentor.getMagicianModifications());
 						}
 						// Adept modifications
-						if (type.usesPowers() || (type.usesSpells() && model.hasRuleFlag(SR6RuleFlag.MENTOR_SPIRIT_BOTH))) {
+						if (useAdept) {
 							allMods.addAll(mentor.getAdeptModifications());
+						}
+
+						// Replace decided <selmod>s with the chosen option
+						for (Modification tmp : new ArrayList<>(allMods)) {
+							if (!(tmp instanceof ModificationChoice selMod))
+								continue;
+							List<Modification> chosen = GenericRPGTools.resolveModificationChoice(selMod, val);
+							if (chosen!=null) {
+								int idx = allMods.indexOf(selMod);
+								allMods.remove(idx);
+								allMods.addAll(idx, chosen);
+							}
 						}
 
 						for (Modification tmp : allMods) {
