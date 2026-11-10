@@ -83,9 +83,15 @@
    <item id="manasense_organ" avail="4" price="5000" type="BIOWARE" subtype="BIOSENSE">
       <usage mode="IMPLANTED" value="0.15"/>
       <flags><flag>AUGMENTATION</flag></flags>
-    	<modifications>
+      <modifications>
         	<checkmod type="SKILL" ref="perception"  value="1" what="EDGE_ONLY_TEST" cond="y"/>
-     	</modifications>
+	  </modifications>
+      <variant id="allow_skill">
+        <modifications>
+            <checkmod type="SKILL" ref="perception"  value="1" what="EDGE_ONLY_TEST" cond="y"/>
+            <allowmod type="SKILL" ref="astral" />
+        </modifications>
+      </variant>
    </item>
    <item id="setae" avail="5" price="12000" type="BIOWARE" subtype="BIOSENSE" reqVariant="y">
       <flags><flag>AUGMENTATION</flag></flags>

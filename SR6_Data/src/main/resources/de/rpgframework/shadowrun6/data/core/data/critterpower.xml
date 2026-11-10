@@ -13,7 +13,11 @@
     <critterpower id="concealment"    type="PHYSICAL" action="AUTO"  range="LINE_OF_SIGHT" dur="SUSTAINED"/>
     <critterpower id="confusion"      type="MANA"     action="AUTO"  range="LINE_OF_SIGHT" dur="SUSTAINED"/>
     <critterpower id="corrosive_spit" type="PHYSICAL" action="MAJOR" range="LINE_OF_SIGHT" dur="INSTANTANEOUS" />
-    <critterpower id="dual_natured"   type="PHYSICAL" action="AUTO"  range="SELF"          dur="ALWAYS" />
+    <critterpower id="dual_natured"   type="PHYSICAL" action="AUTO"  range="SELF"          dur="ALWAYS" >
+        <modifications>
+            <allowmod type="SKILL" ref="astral" />
+        </modifications>
+    </critterpower>
     <critterpower id="elemental_attack" type="PHYSICAL" action="AUTO"  range="LINE_OF_SIGHT" dur="INSTANTANEOUS" >
     	<choices>
 			<choice uuid="6a8584c5-043d-4e37-bbb2-f56d3c51f72c" type="ELEMENT" />

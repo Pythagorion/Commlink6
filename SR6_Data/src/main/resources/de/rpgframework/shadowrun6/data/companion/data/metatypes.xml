@@ -400,6 +400,7 @@
            </itemmod>
          <itemmod type="CRITTER_POWER" ref="concealment"/>
          <itemmod type="CRITTER_POWER" ref="vanishing"/>
+         <itemmod type="QUALITY" ref="astral_perception"/>
 		</modifications>
 	</metatype>
 	<metatype id="pixie" size="60" weight="5" karma="10" human="false" lang="de">
@@ -419,6 +420,7 @@
            </itemmod>
          <itemmod type="CRITTER_POWER" ref="concealment"/>
          <itemmod type="CRITTER_POWER" ref="vanishing"/>
+         <itemmod type="QUALITY" ref="astral_perception"/>
 		</modifications>
 	</metatype>
 	<metatype id="sasquatch" size="240" weight="244" karma="10" human="false">
