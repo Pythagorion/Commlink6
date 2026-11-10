@@ -19,6 +19,7 @@ public interface SR6RejectReasons extends IRejectReasons {
 	public final static String IMPOSS_LIFEPATH_MODULE_LIMIT = "impossible.lifepath.moduleLimit";
 	public final static String IMPOSS_LIFEPATH_MODULE_REQUIRED = "impossible.lifepath.moduleRequired";
 	public final static String IMPOSS_LIFEPATH_SELMOD_MISSING = "impossible.lifepath.selmodMissing";
+	public final static String IMPOSS_LIFEPATH_QUALITY_POLARITY = "impossible.lifepath.qualityPolarity";
 	public final static String IMPOSS_REQUIREMENTS_NOT_MET = "impossible.requirementsNotMet";
 
 	public final static String TODO_ATTRIB_REMAIN_ADJUST = "impossible.remainingAdjustmentPoints";
@@ -55,6 +56,7 @@ public interface SR6RejectReasons extends IRejectReasons {
 	public static final String TODO_NOT_ENOUGH_LIFEPATH_MODULES = "todo.lifepath.modules.notEnough";
 	public static final String TODO_TOO_MANY_LIFEPATH_MODULES = "todo.lifepath.modules.tooMany";
 	public static final String TODO_LIFEPATH_SELMOD_MISSING = "todo.lifepath.modules.selmodMissing";
+	public static final String TODO_LIFEPATH_QUALITY_POLARITY = "todo.lifepath.quality.polarity";
 
 	public static final String TODO_SHIFTER_MUST_HAVE_MAGIC = "todo.shifter_must_have_magic";
 	public static final String TODO_SHIFTER_MUST_BE_METAHUMAN = "todo.shifter_must_be_metahuman";

@@ -33,6 +33,7 @@ import de.rpgframework.shadowrun6.Shadowrun6Core;
 import de.rpgframework.shadowrun6.Shadowrun6Rules;
 import de.rpgframework.shadowrun6.Shadowrun6Tools;
 import de.rpgframework.shadowrun6.chargen.charctrl.SR6RejectReasons;
+import de.rpgframework.shadowrun6.chargen.gen.lifepath.OneOrTwoQualityController;
 import de.rpgframework.shadowrun6.chargen.gen.lifepath.SR6LifePathModuleGenerator;
 import de.rpgframework.shadowrun6.chargen.gen.lifepath.SR6LifePathSurgeQualityController;
 import de.rpgframework.shadowrun6.chargen.gen.lifepath.SR6LifepathCharacterGenerator;
@@ -241,6 +242,57 @@ public class LifepathGenTest {
 		return model.getSkillValues(SkillType.KNOWLEDGE).stream()
 				.map(val -> val.getNameWithoutRating(Locale.GERMAN))
 				.toList();
+	}
+
+	//-------------------------------------------------------------------
+	private SR6Quality quality(String id) {
+		SR6Quality ret = Shadowrun6Core.getItem(SR6Quality.class, id);
+		assertNotNull("Unknown quality "+id, ret);
+		return ret;
+	}
+
+	//-------------------------------------------------------------------
+	/**
+	 * Born this way: one or two qualities - if two, one positive and one negative
+	 */
+	@Test
+	public void testBornQualitiesOnePositiveOneNegative() {
+		charGen.runProcessors();
+		OneOrTwoQualityController ctrl = charGen.getBornThisWayGenerator().getQualityController();
+		assertEquals(2, charGen.getBornThisWayGenerator().getMaximumBornQualities());
+
+		assertTrue(ctrl.select(quality("built_tough")).wasSuccessful());
+		assertFalse("Second positive quality allowed", ctrl.canBeSelected(quality("ambidextrous")).get());
+		assertFalse(ctrl.select(quality("ambidextrous")).wasSuccessful());
+		assertTrue(ctrl.select(quality("sinner")).wasSuccessful());
+		assertFalse("Third quality allowed", ctrl.canBeSelected(quality("allergy")).get());
+		assertEquals(2, charGen.getSettings().getBornQualities().size());
+	}
+
+	//-------------------------------------------------------------------
+	@Test
+	public void testChildhoodQualitiesOnePositiveOneNegative() {
+		charGen.runProcessors();
+		OneOrTwoQualityController ctrl = charGen.getChildhoodGenerator().getQualityController();
+
+		assertTrue(ctrl.select(quality("sinner")).wasSuccessful());
+		assertFalse("Second negative quality allowed", ctrl.canBeSelected(quality("allergy")).get());
+		assertTrue(ctrl.select(quality("ambidextrous")).wasSuccessful());
+		assertFalse("Third quality allowed", ctrl.canBeSelected(quality("analytical_mind")).get());
+	}
+
+	//-------------------------------------------------------------------
+	/**
+	 * Characters saved before the rule was enforced get a ToDo
+	 */
+	@Test
+	public void testBornQualitiesSamePolarityCreatesToDo() {
+		charGen.getSettings().addBornQuality(quality("built_tough"));
+		charGen.getSettings().addBornQuality(quality("ambidextrous"));
+		charGen.runProcessors();
+
+		assertTrue(charGen.getBornThisWayGenerator().getToDos().stream()
+				.anyMatch(todo -> SR6RejectReasons.TODO_LIFEPATH_QUALITY_POLARITY.equals(todo.getKey())));
 	}
 
 	//-------------------------------------------------------------------

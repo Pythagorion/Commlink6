@@ -152,6 +152,11 @@ public class BornThisWayGenerator implements PartialController<Quality> {
 				logger.log(Level.INFO, "Born this way Quality: {0}", quality);
 				addBornQuality(quality);
 			}
+			int maximum = getMaximumBornQualities();
+			if (parent.getSettings().getBornQualities().size()>maximum)
+				todos.add( new ToDoElement(Severity.STOPPER, SR6RejectReasons.RES, SR6RejectReasons.TODO_QUALITY_TOO_MANY, maximum));
+			if (OneOrTwoQualityController.hasSamePolarity(parent.getSettings().getBornQualities()))
+				todos.add( new ToDoElement(Severity.STOPPER, SR6RejectReasons.RES, SR6RejectReasons.TODO_LIFEPATH_QUALITY_POLARITY));
 		}
 		for (QualityValue quality : parent.getSettings().getSurgeQualities()) {
 			addSurgeQuality(quality);
@@ -237,9 +242,12 @@ public class BornThisWayGenerator implements PartialController<Quality> {
 	}
 
 	//-------------------------------------------------------------------
+	/**
+	 * One or two qualities - but never more than the overall life path limit allows
+	 */
 	public int getMaximumBornQualities() {
 		int maximumQualities = parent.getRuleController().getRuleValueAsInteger(Shadowrun6Rules.CHARGEN_LIFEPATH_MAX_QUALITIES);
-		return Math.max(0, maximumQualities - 2);
+		return Math.min(2, Math.max(0, maximumQualities - 2));
 	}
 
 	//-------------------------------------------------------------------

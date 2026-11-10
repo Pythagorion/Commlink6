@@ -164,6 +164,9 @@ public class ChildhoodGenerator implements PartialController<Quality> {
 		logger.log(Level.INFO, "Childhood Quality 2: {0}", parent.getSettings().getChildhoodQuality2());
 		if (parent.getSettings().getChildhoodQuality2()!=null) {
 			getModel().addQuality(new QualityValue(parent.getSettings().getChildhoodQuality2(), 1));
+			if (parent.getSettings().getChildhoodQuality1()!=null && OneOrTwoQualityController.hasSamePolarity(
+					List.of(parent.getSettings().getChildhoodQuality1(), parent.getSettings().getChildhoodQuality2())))
+				todos.add( new ToDoElement(Severity.STOPPER, SR6RejectReasons.RES, SR6RejectReasons.TODO_LIFEPATH_QUALITY_POLARITY));
 		}
 
 		if (parent.getSettings().getChildhoodArea()==null) {

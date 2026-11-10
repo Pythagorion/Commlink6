@@ -224,9 +224,31 @@ public class OneOrTwoQualityController extends CommonQualityGenerator implements
 	@Override
 	public Possible canBeSelected(Quality value, Decision... decisions) {
 		int maximumQualities = getMaximumQualities();
-		if (qualitiesSupplier!=null && getConfiguredQualities().size()>=maximumQualities)
+		List<Quality> chosen = getChosenQualities();
+		if (chosen.size()>=maximumQualities)
 			return new Possible(ToDoElement.Severity.STOPPER, SR6RejectReasons.RES, SR6RejectReasons.IMPOSS_QUALITY_ALREADY_6, maximumQualities);
+		// If you choose two qualities, one must be a positive quality and the other must be a negative quality
+		if (maximumQualities<=2 && chosen.size()==1 && chosen.get(0).isPositive()==value.isPositive())
+			return new Possible(ToDoElement.Severity.STOPPER, SR6RejectReasons.RES, SR6RejectReasons.IMPOSS_LIFEPATH_QUALITY_POLARITY);
 		return super.canBeSelected(value, decisions);
+	}
+
+	//-------------------------------------------------------------------
+	/**
+	 * @return TRUE, if two qualities are both positive or both negative
+	 */
+	public static boolean hasSamePolarity(List<? extends Quality> qualities) {
+		return qualities.size()==2 && qualities.get(0).isPositive()==qualities.get(1).isPositive();
+	}
+
+	//-------------------------------------------------------------------
+	private List<Quality> getChosenQualities() {
+		if (qualitiesSupplier!=null)
+			return getConfiguredQualities();
+		List<Quality> ret = new ArrayList<>();
+		if (quality1Supplier.get()!=null) ret.add(quality1Supplier.get());
+		if (quality2Supplier.get()!=null) ret.add(quality2Supplier.get());
+		return ret;
 	}
 
 	//-------------------------------------------------------------------
