@@ -616,9 +616,18 @@ public class Shadowrun6Tools {
 						return RES.format("modification.quality", loc, ((Quality)valMod.getResolvedKey()).getName(loc));
 					return RES.format("modification.quality", loc, getUnresolvedModificationName(valMod.getKey(), mod));
 				case SKILL:
-					if (valMod.getResolvedKey() instanceof SR6Skill)
-						return RES.format("modification.skill", loc, ((SR6Skill)valMod.getResolvedKey()).getName(loc));
-					return RES.format("modification.skill", loc, getUnresolvedModificationName(valMod.getKey(), mod));
+					String itemSkillName = (valMod.getResolvedKey() instanceof SR6Skill)
+							? ((SR6Skill)valMod.getResolvedKey()).getName(loc)
+							: getUnresolvedModificationName(valMod.getKey(), mod);
+					// Named skills (e.g. knowledge) are only distinguishable by their decision
+					List<String> named = valMod.getDecisions().stream()
+							.map(Decision::getValue)
+							.filter(v -> v!=null && !v.isBlank())
+							.map(v -> v.startsWith("i18n.")?v.substring(5):v)
+							.toList();
+					if (!named.isEmpty())
+						itemSkillName += " ("+String.join(", ", named)+")";
+					return RES.format("modification.skill", loc, itemSkillName);
 				case GEAR:
 					if (valMod.getResolvedKey() instanceof ItemTemplate)
 						return ((ItemTemplate)valMod.getResolvedKey()).getName(loc);

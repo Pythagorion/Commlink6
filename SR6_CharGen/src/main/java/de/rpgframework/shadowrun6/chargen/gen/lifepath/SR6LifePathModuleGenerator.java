@@ -3,7 +3,9 @@ package de.rpgframework.shadowrun6.chargen.gen.lifepath;
 import java.lang.System.Logger.Level;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -18,6 +20,7 @@ import de.rpgframework.genericrpg.data.Decision;
 import de.rpgframework.genericrpg.data.GenericRPGTools;
 import de.rpgframework.genericrpg.modification.DataItemModification;
 import de.rpgframework.genericrpg.modification.Modification;
+import de.rpgframework.genericrpg.modification.ModificationChoice;
 import de.rpgframework.genericrpg.modification.ValueModification;
 import de.rpgframework.genericrpg.requirements.AnyRequirement;
 import de.rpgframework.genericrpg.requirements.ExistenceRequirement;
@@ -129,6 +132,10 @@ public class SR6LifePathModuleGenerator extends ControllerImpl<LifepathModule>
 		if (!qualityChoices.get())
 			return qualityChoices;
 
+		Possible selmodChoices = validateSelmodChoices(value, decisions);
+		if (!selmodChoices.get())
+			return selmodChoices;
+
 		Possible requirements = Shadowrun6Tools.checkDecisionsAndRequirements(getModel(), value, decisions);
 		if (!requirements.get())
 			return new Possible(Severity.STOPPER, SR6RejectReasons.RES, SR6RejectReasons.IMPOSS_REQUIREMENTS_NOT_MET);
@@ -153,9 +160,32 @@ public class SR6LifePathModuleGenerator extends ControllerImpl<LifepathModule>
 	}
 
 	//-------------------------------------------------------------------
+	/**
+	 * Every &lt;selmod&gt; must be decided by the ID of one of its options
+	 */
+	private Possible validateSelmodChoices(LifepathModule value, Decision... decisions) {
+		for (Modification mod : value.getOutgoingModifications()) {
+			if (!(mod instanceof ModificationChoice selMod))
+				continue;
+			Decision decision = findDecision(selMod.getUUID(), decisions);
+			boolean validOption = decision!=null && selMod.getModificiations().stream()
+					.anyMatch(opt -> opt instanceof DataItemModification dataMod && dataMod.getId()!=null
+							&& dataMod.getId().toString().equals(decision.getValue()));
+			if (!validOption)
+				return new Possible(Severity.STOPPER, SR6RejectReasons.RES, SR6RejectReasons.IMPOSS_LIFEPATH_SELMOD_MISSING);
+		}
+		return Possible.TRUE;
+	}
+
+	//-------------------------------------------------------------------
 	private Decision findDecision(Choice choice, Decision... decisions) {
+		return findDecision(choice.getUUID(), decisions);
+	}
+
+	//-------------------------------------------------------------------
+	private Decision findDecision(UUID choiceUUID, Decision... decisions) {
 		for (Decision decision : decisions) {
-			if (decision!=null && choice.getUUID().equals(decision.getChoiceUUID()))
+			if (decision!=null && choiceUUID.equals(decision.getChoiceUUID()))
 				return decision;
 		}
 		return null;
@@ -331,19 +361,16 @@ public class SR6LifePathModuleGenerator extends ControllerImpl<LifepathModule>
 				selectionsLeft--;
 				LifepathModule module = modVal.getResolved();
 				for (Modification tmp : module.getOutgoingModifications()) {
-					if (tmp instanceof DataItemModification) {
-						DataItemModification mod = (DataItemModification)tmp;
-						if (mod.getConnectedChoice()!=null) {
-							Choice choice = module.getChoice(mod.getConnectedChoice());
-							Decision dec  = modVal.getDecision(choice.getUUID());
-							List<Modification> toAdd = GenericRPGTools.decisionToModifications(mod, choice, dec);
-							logger.log(Level.INFO, "For {0} decision {1} for {2} leads to {3}",modVal.getKey(), dec.getValue(), dec.getChoiceUUID(), toAdd);
-							toAdd.forEach(generated -> unprocessed.add(normalizeModuleModification(generated, module)));
-						} else {
-							unprocessed.add(normalizeModuleModification(tmp, module));
+					if (tmp instanceof ModificationChoice selMod) {
+						// Only the chosen option of a <selmod> applies
+						List<Modification> chosen = GenericRPGTools.resolveModificationChoice(selMod, modVal);
+						if (chosen==null) {
+							todos.add(new de.rpgframework.genericrpg.ToDoElement(Severity.STOPPER, SR6RejectReasons.RES, SR6RejectReasons.TODO_LIFEPATH_SELMOD_MISSING, module.getName()));
+							continue;
 						}
+						chosen.forEach(mod -> addModuleModification(localizeDecisions(mod, module), module, modVal, unprocessed));
 					} else {
-						unprocessed.add(normalizeModuleModification(tmp, module));
+						addModuleModification(tmp, module, modVal, unprocessed);
 					}
 				}
 
@@ -368,6 +395,48 @@ public class SR6LifePathModuleGenerator extends ControllerImpl<LifepathModule>
 		}
 
 		return unprocessed;
+	}
+
+	//-------------------------------------------------------------------
+	/**
+	 * Replace "i18n.&lt;text&gt;" decisions with the localized text, falling back to the text itself.
+	 * Works on a copy, so the module data stays untouched.
+	 */
+	private Modification localizeDecisions(Modification mod, LifepathModule module) {
+		if (!(mod instanceof DataItemModification dataMod)
+				|| dataMod.getDecisions().stream().noneMatch(dec -> dec.getValue()!=null && dec.getValue().startsWith("i18n.")))
+			return mod;
+
+		List<Decision> localized = new ArrayList<>();
+		for (Decision dec : dataMod.getDecisions()) {
+			if (dec.getValue()!=null && dec.getValue().startsWith("i18n.")) {
+				String text = dec.getValue().substring(5);
+				String key  = "lifemod."+module.getId()+"."+text;
+				String result = module.getLocalizedString(Locale.getDefault(), key);
+				if (result==null || result.isBlank() || result.contains(key))
+					result = text;
+				localized.add(new Decision(dec.getChoiceUUID(), result));
+			} else {
+				localized.add(dec);
+			}
+		}
+		DataItemModification ret = dataMod.clone();
+		ret.setDecisions(localized);
+		ret.setSource(module);
+		return ret;
+	}
+
+	//-------------------------------------------------------------------
+	private void addModuleModification(Modification tmp, LifepathModule module, LifepathModuleValue modVal, List<Modification> unprocessed) {
+		if (tmp instanceof DataItemModification mod && mod.getConnectedChoice()!=null) {
+			Choice choice = module.getChoice(mod.getConnectedChoice());
+			Decision dec  = modVal.getDecision(choice.getUUID());
+			List<Modification> toAdd = GenericRPGTools.decisionToModifications(mod, choice, dec);
+			logger.log(Level.INFO, "For {0} decision {1} for {2} leads to {3}",modVal.getKey(), dec.getValue(), dec.getChoiceUUID(), toAdd);
+			toAdd.forEach(generated -> unprocessed.add(normalizeModuleModification(generated, module)));
+		} else {
+			unprocessed.add(normalizeModuleModification(tmp, module));
+		}
 	}
 
 	//-------------------------------------------------------------------

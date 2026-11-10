@@ -5,6 +5,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -12,8 +16,12 @@ import org.junit.Test;
 import de.rpgframework.character.CharacterIOException;
 import de.rpgframework.genericrpg.chargen.OperationResult;
 import de.rpgframework.genericrpg.data.Decision;
+import de.rpgframework.genericrpg.modification.DataItemModification;
+import de.rpgframework.genericrpg.modification.Modification;
+import de.rpgframework.genericrpg.modification.ModificationChoice;
 import de.rpgframework.shadowrun.MagicOrResonanceType;
 import de.rpgframework.shadowrun.ShadowrunAttribute;
+import de.rpgframework.shadowrun.SkillType;
 import de.rpgframework.shadowrun6.LifepathModule;
 import de.rpgframework.shadowrun6.LifepathModuleValue;
 import de.rpgframework.shadowrun6.PowerLevel;
@@ -23,6 +31,8 @@ import de.rpgframework.shadowrun6.SR6Skill;
 import de.rpgframework.shadowrun6.Shadowrun6Character;
 import de.rpgframework.shadowrun6.Shadowrun6Core;
 import de.rpgframework.shadowrun6.Shadowrun6Rules;
+import de.rpgframework.shadowrun6.Shadowrun6Tools;
+import de.rpgframework.shadowrun6.chargen.charctrl.SR6RejectReasons;
 import de.rpgframework.shadowrun6.chargen.gen.lifepath.SR6LifePathModuleGenerator;
 import de.rpgframework.shadowrun6.chargen.gen.lifepath.SR6LifePathSurgeQualityController;
 import de.rpgframework.shadowrun6.chargen.gen.lifepath.SR6LifepathCharacterGenerator;
@@ -97,7 +107,8 @@ public class LifepathGenTest {
 		OperationResult<LifepathModuleValue> res = modules.select(Shadowrun6Core.getItem(LifepathModule.class, "gangmitglied"),
 				new Decision("dd8bb000-fc65-4195-a8cf-1866fa01f2ed","REACTION"),
 				new Decision("5e000fdb-8415-4a0c-9a1d-1e55f633ed34","firearms"),
-				new Decision("72f10b55-0eb5-41b6-874a-00d3b738c905", "stealth")
+				new Decision("72f10b55-0eb5-41b6-874a-00d3b738c905", "stealth"),
+				new Decision("5fd30e6a-7d37-470f-9824-406f9494c5a6", "8c3920e9-06d7-4ae2-ae06-9c12b4b02e6e")
 				);
 		assertNotNull(res);
 		assertTrue(res.getError(),res.wasSuccessful());
@@ -129,6 +140,110 @@ public class LifepathGenTest {
 	}
 
 	//-------------------------------------------------------------------
+	private final static String AGENT_SELMOD = "84cc83dc-7b58-45d1-811a-85ddc900fae1";
+	private final static String AGENT_SPYCRAFT = "7dd367d3-df22-4ed9-805b-78f6250ae482";
+
+	//-------------------------------------------------------------------
+	private Decision[] agentDecisions(Decision...more) {
+		List<Decision> ret = new ArrayList<>(List.of(
+				new Decision("41d9d69d-6d3a-483d-98a4-243103671dc3", "LOGIC"),
+				new Decision("82c68a8e-e879-4a44-9c54-56735b531885", "INTUITION"),
+				new Decision("47e4b4de-7023-4214-8d3c-7152afaa4fb0", "perception")
+				));
+		ret.addAll(List.of(more));
+		return ret.toArray(new Decision[ret.size()]);
+	}
+
+	//-------------------------------------------------------------------
+	/**
+	 * A life module with an undecided &lt;selmod&gt; cannot be selected
+	 */
+	@Test
+	public void testLifepathModuleSelmodMustBeDecided() {
+		SR6LifePathModuleGenerator modules = charGen.getModuleGenerator();
+		LifepathModule agent = Shadowrun6Core.getItem(LifepathModule.class, "agent");
+		assertNotNull(agent);
+
+		assertFalse(modules.canBeSelected(agent, agentDecisions()).get());
+		assertFalse(modules.canBeSelected(agent, agentDecisions(new Decision(AGENT_SELMOD, "no-such-option"))).get());
+		assertTrue(modules.canBeSelected(agent, agentDecisions(new Decision(AGENT_SELMOD, AGENT_SPYCRAFT))).get());
+	}
+
+	//-------------------------------------------------------------------
+	/**
+	 * Only the chosen option of a &lt;selmod&gt; is applied
+	 */
+	@Test
+	public void testLifepathModuleSelmodGrantsChosenOption() {
+		SR6LifePathModuleGenerator modules = charGen.getModuleGenerator();
+		LifepathModule agent = Shadowrun6Core.getItem(LifepathModule.class, "agent");
+		charGen.runProcessors();
+		List<String> before = knowledgeSkills();
+
+		OperationResult<LifepathModuleValue> res = modules.select(agent, agentDecisions(new Decision(AGENT_SELMOD, AGENT_SPYCRAFT)));
+		assertTrue(res.getError(), res.wasSuccessful());
+
+		List<String> added = new ArrayList<>(knowledgeSkills());
+		before.forEach(added::remove);
+		assertEquals("Expected exactly the chosen knowledge skill, but got "+added, 1, added.size());
+		assertEquals("Spionagetechniken", added.get(0));
+		assertFalse(modules.getToDos().stream().anyMatch(todo -> SR6RejectReasons.TODO_LIFEPATH_SELMOD_MISSING.equals(todo.getKey())));
+	}
+
+	//-------------------------------------------------------------------
+	/**
+	 * Every &lt;selmod&gt; option of every life module can be told apart in the choice dialog
+	 */
+	@Test
+	public void testLifepathModuleSelmodOptionsDistinguishable() {
+		List<String> problems = new ArrayList<>();
+		for (LifepathModule module : Shadowrun6Core.getItemList(LifepathModule.class)) {
+			for (Modification mod : module.getOutgoingModifications()) {
+				if (!(mod instanceof ModificationChoice selMod))
+					continue;
+				List<String> labels = new ArrayList<>();
+				for (Modification opt : selMod.getModificiations()) {
+					if (!(opt instanceof DataItemModification dataMod) || dataMod.getId()==null) {
+						problems.add(module.getId()+": option without id "+opt);
+						continue;
+					}
+					// TODO: technomancerin and thinktank still have "i18n.?" placeholders instead of knowledge skill names
+					if (dataMod.getDecisions().stream().anyMatch(dec -> "i18n.?".equals(dec.getValue())))
+						continue;
+					labels.add(Shadowrun6Tools.getModificationString(opt, Locale.GERMAN));
+				}
+				if (labels.contains(null) || labels.stream().distinct().count()<labels.size())
+					problems.add(module.getId()+": "+labels);
+			}
+		}
+		assertTrue(problems.size()+" problems:\n"+String.join("\n", problems), problems.isEmpty());
+	}
+
+	//-------------------------------------------------------------------
+	/**
+	 * A previously selected module with an undecided &lt;selmod&gt; (e.g. from an older save) creates a ToDo
+	 */
+	@Test
+	public void testLifepathModuleUndecidedSelmodCreatesToDo() {
+		SR6LifePathModuleGenerator modules = charGen.getModuleGenerator();
+		LifepathModule agent = Shadowrun6Core.getItem(LifepathModule.class, "agent");
+		LifepathModuleValue val = new LifepathModuleValue(agent);
+		for (Decision dec : agentDecisions())
+			val.addDecision(dec);
+		charGen.getSettings().addModule(val);
+		charGen.runProcessors();
+
+		assertTrue(modules.getToDos().stream().anyMatch(todo -> SR6RejectReasons.TODO_LIFEPATH_SELMOD_MISSING.equals(todo.getKey())));
+	}
+
+	//-------------------------------------------------------------------
+	private List<String> knowledgeSkills() {
+		return model.getSkillValues(SkillType.KNOWLEDGE).stream()
+				.map(val -> val.getNameWithoutRating(Locale.GERMAN))
+				.toList();
+	}
+
+	//-------------------------------------------------------------------
 	@Test
 	public void testCannotDeselectRequiredLifeModule() {
 		SR6LifePathModuleGenerator modules = charGen.getModuleGenerator();
@@ -140,13 +255,16 @@ public class LifepathGenTest {
 		OperationResult<LifepathModuleValue> studiesResult = modules.select(studies,
 				new Decision("4085c382-f35f-4cf4-a3a0-1f1de3b08e83", "LOGIC"),
 				new Decision("d3782337-10d5-4be6-b7ee-d8f07098537b", "biotech"),
-				new Decision("5e39d6f5-b06f-457c-8017-e2cf6e3e9c5d", "electronics")
+				new Decision("5e39d6f5-b06f-457c-8017-e2cf6e3e9c5d", "electronics"),
+				new Decision("39650ed7-5e36-4a4b-a862-8f5471084966", "a44cac60-5483-4def-b749-f41a21d374bd"),
+				new Decision("272e3c47-d229-4751-ad19-c3171422d881", "f6cfc352-0bbd-421b-a783-bbbb07a7bf42")
 				);
 		assertTrue(studiesResult.getError(), studiesResult.wasSuccessful());
 
 		OperationResult<LifepathModuleValue> doctorResult = modules.select(doctor,
 				new Decision("3a2d5141-0787-4d99-b550-bf5d90a8ec74", "LOGIC"),
-				new Decision("d6a6b973-7455-4d5f-877a-db1db4db542f", "biotech")
+				new Decision("d6a6b973-7455-4d5f-877a-db1db4db542f", "biotech"),
+				new Decision("8f4bd0e0-dd11-4055-8d22-014bdd1a9c46", "e3ad4529-c859-4159-867d-ffdd6a6b2a50")
 				);
 		assertTrue(doctorResult.getError(), doctorResult.wasSuccessful());
 
