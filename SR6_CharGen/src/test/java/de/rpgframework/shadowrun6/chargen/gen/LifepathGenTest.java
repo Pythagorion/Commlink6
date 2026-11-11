@@ -8,14 +8,18 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.rpgframework.character.CharacterIOException;
+import de.rpgframework.genericrpg.ToDoElement;
+import de.rpgframework.genericrpg.ToDoElement.Severity;
 import de.rpgframework.genericrpg.chargen.OperationResult;
 import de.rpgframework.genericrpg.data.Decision;
 import de.rpgframework.genericrpg.modification.DataItemModification;
@@ -32,11 +36,13 @@ import de.rpgframework.shadowrun6.PowerLevel;
 import de.rpgframework.shadowrun6.SR6MetaType;
 import de.rpgframework.shadowrun6.SR6Quality;
 import de.rpgframework.shadowrun6.SR6Skill;
+import de.rpgframework.shadowrun6.SR6SkillValue;
 import de.rpgframework.shadowrun6.Shadowrun6Character;
 import de.rpgframework.shadowrun6.Shadowrun6Core;
 import de.rpgframework.shadowrun6.Shadowrun6Rules;
 import de.rpgframework.shadowrun6.Shadowrun6Tools;
 import de.rpgframework.shadowrun6.chargen.charctrl.SR6RejectReasons;
+import de.rpgframework.shadowrun6.chargen.gen.SR6ContactGenerator;
 import de.rpgframework.shadowrun6.chargen.gen.lifepath.EarlyAdultGenerator;
 import de.rpgframework.shadowrun6.chargen.gen.lifepath.OneOrTwoQualityController;
 import de.rpgframework.shadowrun6.chargen.gen.lifepath.SR6LifePathModuleGenerator;
@@ -500,51 +506,226 @@ public class LifepathGenTest {
 	}
 
 	//-------------------------------------------------------------------
-	@SuppressWarnings("unchecked")
+	/**
+	 * Select a life module with decisions given as "choice-UUID=value"
+	 */
+	private LifepathModuleValue selectModule(String id, String... decisions) {
+		LifepathModule module = Shadowrun6Core.getItem(LifepathModule.class, id);
+		assertNotNull("Unknown life module "+id, module);
+		Decision[] decs = new Decision[decisions.length];
+		for (int i=0; i<decisions.length; i++) {
+			String[] pair = decisions[i].split("=", 2);
+			decs[i] = new Decision(pair[0], pair[1]);
+		}
+		OperationResult<LifepathModuleValue> res = charGen.getModuleGenerator().select(module, decs);
+		assertTrue("Selecting "+id+" failed: "+res.getError(), res.wasSuccessful());
+		return res.get();
+	}
+
+	//-------------------------------------------------------------------
+	private int attr(ShadowrunAttribute key) {
+		return model.getAttribute(key).getModifiedValue();
+	}
+
+	//-------------------------------------------------------------------
+	private int skill(String id) {
+		SR6SkillValue val = model.getSkillValue(Shadowrun6Core.getSkill(id));
+		return (val!=null)?val.getModifiedValue():0;
+	}
+
+	//-------------------------------------------------------------------
+	private void assertNoStopper(String step, List<ToDoElement> todos) {
+		List<String> stoppers = todos.stream()
+				.filter(todo -> todo.getSeverity()==Severity.STOPPER)
+				.map(todo -> todo.getKey()+": "+todo.getMessage(Locale.ENGLISH))
+				.toList();
+		assertTrue(step+" has open ToDos: "+stoppers, stoppers.isEmpty());
+	}
+
+	//-------------------------------------------------------------------
+	/**
+	 * A complete life path character - all decisions of all life stages are made
+	 * and the calculated character is checked against what the decisions must cause.
+	 */
 	@Test
 	public void testGaius() throws CharacterIOException {
 		charGen.runProcessors();
 		assertEquals(50, model.getKarmaFree());
-//		SR6PointBuySettings settings = model.getCharGenSettings(SR6PointBuySettings.class);
-//		assertEquals(100, settings.characterPoints);
 		model.setName("Gaius");
 
 		// Magic/Resonance
 		charGen.getMagicOrResonanceController().select(Shadowrun6Core.getItem(MagicOrResonanceType.class, "mysticadept"));
 		assertEquals(50, model.getKarmaFree());
-		assertEquals(1, model.getAttribute(ShadowrunAttribute.CHARISMA).getModifiedValue());
-		assertEquals(1, model.getAttribute(ShadowrunAttribute.AGILITY).getModifiedValue());
-		assertEquals(2, model.getAttribute(ShadowrunAttribute.EDGE    ).getModifiedValue());
-		assertEquals(1, model.getAttribute(ShadowrunAttribute.MAGIC   ).getModifiedValue());
+		assertEquals(1, attr(ShadowrunAttribute.CHARISMA));
+		assertEquals(1, attr(ShadowrunAttribute.AGILITY));
+		assertEquals(2, attr(ShadowrunAttribute.EDGE));
+		assertEquals(1, attr(ShadowrunAttribute.MAGIC));
 
-		SR6MetaType human = Shadowrun6Core.getItem(SR6MetaType.class, "elf");
+		// Metatype
+		SR6MetaType elf = Shadowrun6Core.getItem(SR6MetaType.class, "elf");
 		assertNotNull("No metatype controller found", charGen.getMetatypeController());
-		charGen.getMetatypeController().canBeSelected(human);
-		charGen.getMetatypeController().select(human);
-		assertEquals(50, model.getKarmaFree());
-		assertEquals(2, model.getAttribute(ShadowrunAttribute.CHARISMA).getModifiedValue());
-		assertEquals(2, model.getAttribute(ShadowrunAttribute.AGILITY).getModifiedValue());
-		assertEquals(1, model.getAttribute(ShadowrunAttribute.EDGE    ).getModifiedValue());
-		assertEquals(1, model.getAttribute(ShadowrunAttribute.MAGIC   ).getModifiedValue());
+		assertTrue(charGen.getMetatypeController().select(elf));
+		int expectedKarma = 50 - charGen.getMetatypeController().getKarmaCost(elf);
+		assertEquals(expectedKarma, model.getKarmaFree());
+		assertEquals(2, attr(ShadowrunAttribute.CHARISMA));
+		assertEquals(2, attr(ShadowrunAttribute.AGILITY));
+		assertEquals(1, attr(ShadowrunAttribute.EDGE));
+		assertEquals(1, attr(ShadowrunAttribute.MAGIC));
+
+		/*
+		 * Born this way: native language and one quality
+		 */
 		charGen.getBornThisWayGenerator().selectNativeLanguage("German");
-		charGen.getBornThisWayGenerator().getQualityController().select(Shadowrun6Core.getItem(SR6Quality.class, "sinner"));
+		assertTrue(charGen.getBornThisWayGenerator().getQualityController().select(quality("sinner")).wasSuccessful());
+		expectedKarma += quality("sinner").getKarmaCost();
+		assertEquals(expectedKarma, model.getKarmaFree());
+		assertEquals(4, skill("language"));
+		model.setLifepathBabyBackground("Born in Hamburg");
 
-		charGen.getChildhoodGenerator().getSkillController().select(Shadowrun6Core.getItem(SR6Skill.class, "con"));
-		charGen.getChildhoodGenerator().getSkillController().select(Shadowrun6Core.getItem(SR6Skill.class, "influence"));
-		charGen.getChildhoodGenerator().getSkillController().select(Shadowrun6Core.getItem(SR6Skill.class, "perception"));
-		charGen.getChildhoodGenerator().getSkillController().select(Shadowrun6Core.getItem(SR6Skill.class, "athletics"));
-		charGen.getChildhoodGenerator().getQualityController().select(Shadowrun6Core.getItem(SR6Quality.class, "charismatic_defense"));
-		charGen.getChildhoodGenerator().getQualityController().select(Shadowrun6Core.getItem(SR6Quality.class, "allergy"),
-				new Decision(Shadowrun6Core.getItem(SR6Quality.class, "allergy").getChoices().get(0).getUUID(),"seasonal"),
-				new Decision(Shadowrun6Core.getItem(SR6Quality.class, "allergy").getChoices().get(1).getUUID(),"mild"),
-				new Decision(Shadowrun6Core.getItem(SR6Quality.class, "allergy").getChoices().get(2).getUUID(),"Pollen")
-				);
+		/*
+		 * Early childhood: 4 skills, the area grown up in and a positive and a negative quality
+		 */
+		for (String id : List.of("con","influence","perception","athletics"))
+			charGen.getChildhoodGenerator().getSkillController().select(Shadowrun6Core.getItem(SR6Skill.class, id));
+		charGen.getChildhoodGenerator().selectChildhoodArea("Hamburg");
+		assertTrue(charGen.getChildhoodGenerator().getQualityController().select(quality("charismatic_defense")).wasSuccessful());
+		assertTrue(charGen.getChildhoodGenerator().getQualityController().select(quality("allergy"),
+				new Decision(quality("allergy").getChoices().get(0).getUUID(),"seasonal"),
+				new Decision(quality("allergy").getChoices().get(1).getUUID(),"mild"),
+				new Decision(quality("allergy").getChoices().get(2).getUUID(),"Pollen")
+				).wasSuccessful());
+		model.setLifepathChildhoodBackground("Grew up on the streets of Hamburg");
+		for (String id : List.of("con","influence","perception","athletics"))
+			assertEquals("Childhood skill "+id, 2, skill(id));
 
+		/*
+		 * Coming of age: focus skill, attribute, a quality and the connection
+		 */
+		// Mystic adepts already have sorcery 1 from their magic type
+		int sorceryBefore = skill("sorcery");
 		charGen.getEarlyAdultGenerator().getSkillController().select(Shadowrun6Core.getItem(SR6Skill.class, "sorcery"));
+		int strengthBefore = attr(ShadowrunAttribute.STRENGTH);
+		charGen.getEarlyAdultGenerator().selectAttribute(ShadowrunAttribute.STRENGTH);
+		assertEquals(strengthBefore+5, attr(ShadowrunAttribute.STRENGTH));
+		assertEquals("Focus skill +4", sorceryBefore+4, skill("sorcery"));
+		assertTrue(charGen.getEarlyAdultGenerator().getQualityController().select(quality("analytical_mind")).wasSuccessful());
+		Contact mentor = charGen.getEarlyAdultGenerator().createContact(Shadowrun6Core.getItem(ContactType.class, "MAGIC"));
+		mentor.setName("Old Mentor");
+		assertTrue(charGen.getEarlyAdultGenerator().setContactInfluence(3));
+		model.setLifepathComingOfAgeBackground("Discovered magic at sixteen");
+		charGen.runProcessors();
+
+		/*
+		 * Adult life: 8 modules
+		 */
+		Map<ShadowrunAttribute,Integer> attrBefore = new HashMap<>();
+		for (ShadowrunAttribute key : ShadowrunAttribute.primaryAndSpecialValues())
+			attrBefore.put(key, attr(key));
+		Map<String,Integer> skillBefore = new HashMap<>();
+		for (String id : List.of("perception","con","astral","athletics","influence","sorcery"))
+			skillBefore.put(id, skill(id));
+		List<String> knowledgeBefore = knowledgeSkills();
+		int karmaBeforeModules = model.getKarmaFree();
+
+		selectModule("agent",
+				"41d9d69d-6d3a-483d-98a4-243103671dc3=LOGIC",
+				"82c68a8e-e879-4a44-9c54-56735b531885=WILLPOWER",
+				"47e4b4de-7023-4214-8d3c-7152afaa4fb0=perception",
+				"84cc83dc-7b58-45d1-811a-85ddc900fae1=7dd367d3-df22-4ed9-805b-78f6250ae482");  // Spionagetechniken
+		selectModule("bodyguard",
+				"b1b85bed-d2e6-4215-9391-e78f214c963e=BODY",
+				"06b16ee6-384a-4b27-b30c-7d2e400d2634=REACTION",
+				"8f92b461-b473-4f08-b5d3-bc5b1d9aff84=perception");
+		selectModule("angestellte_bei_stuffer_shack",
+				"1976914d-adf5-431d-baae-d0088bb496fe=INTUITION",
+				"1963d15f-9e7b-40e8-a6c5-2691c9a18d65=con",
+				"eb1a4f8d-682c-4cb9-8ab2-9589103fb11c=3dc48f62-3035-49f4-b8ec-8a3fb2a96609");  // +25000 Nuyen
+		selectModule("arbeiterin",
+				"3461db82-382b-4daf-961b-c734dddb46fa=WILLPOWER",
+				"528b8d3a-8cf8-4fb9-8e97-1abe5180cf3b=INTUITION",
+				"9689a16c-ca8a-4a4c-ab32-7c7fee93b768=perception",
+				"d2f3f6dd-d4c7-471d-adcd-fa110ae342ef=850437da-e016-490e-975f-5c674c8d43d1");  // Trideoserien
+		selectModule("artefaktjaeger",
+				"536caf58-7ad4-41e2-bc34-51e1810cf519=LOGIC",
+				"74ee0be9-dbee-43cf-9794-162d8afaa8c5=MAGIC",
+				"5c7fd703-e66e-40fd-bb69-eb1153348535=astral",
+				"e4fbd319-5ad6-4ab2-bdb4-af087c08b06d=814b65e0-3db6-4ec1-a11b-a6367e41d4a3");  // Arkana
+		selectModule("athletin",
+				"98984cc2-f187-42f3-80ec-828ae8a4f9bf=BODY",
+				"2293831a-9502-4c56-a75f-7156fa169db6=AGILITY",
+				"5c183eaf-163e-4b55-a11a-9b1b334243e6=athletics",
+				"8280696b-2bfc-4beb-a46a-b511857ce92f=afb6324e-ab84-4602-aee5-0bc740d8cb7c");  // Stadtkrieg
+		selectModule("barista_slash_barkeeper",
+				"6ac7e347-682a-4513-8a7e-c7588381e4d2=CHARISMA",
+				"d3d04132-75e3-45a7-a40d-e287fad189dd=con",
+				"c73fd585-c595-44df-bd23-53222811230c=d0f00926-6ae7-4a38-b43e-d6609a1368bc");  // Aktuelles Tagesgeschehen
+		selectModule("bedienstete",
+				"2a0b802a-c3e8-412b-a4a9-da7eff9b4bfb=WILLPOWER",
+				"0ef5c2d4-c815-47ba-9c3c-d06beb144535=influence",
+				"894e9434-8a43-4da1-b324-99adc542b4c1=2772029d-8b07-48c8-8add-41734f2b03ff",   // MAGIC +1
+				"afc86844-8f09-42bd-98e4-5f74a13c88a2=b0e1d524-1dd6-477e-8862-ab98d5596ee2");  // Moderne Kueche
+		model.setLifepathAdultBackground("Worked for a corporation, then went underground");
 
 		charGen.finish();
-		byte[] raw = Shadowrun6Core.encode(model);
-		String xml = new String(raw);
-		System.out.println(xml);
+
+		// Every life stage is complete
+		assertNoStopper("Born this way", charGen.getBornThisWayGenerator().getToDos());
+		assertNoStopper("Childhood", charGen.getChildhoodGenerator().getToDos());
+		assertNoStopper("Coming of age", charGen.getEarlyAdultGenerator().getToDos());
+		assertNoStopper("Adult life", charGen.getModuleGenerator().getToDos());
+
+		// Modules don't cost Karma
+		assertEquals(karmaBeforeModules, model.getKarmaFree());
+
+		// Attributes: +1 for every chosen attribute, MAGIC also from a <selmod>
+		Map<ShadowrunAttribute,Integer> attrDelta = Map.of(
+				ShadowrunAttribute.LOGIC, 2, ShadowrunAttribute.WILLPOWER, 3, ShadowrunAttribute.BODY, 2,
+				ShadowrunAttribute.REACTION, 1, ShadowrunAttribute.INTUITION, 2, ShadowrunAttribute.MAGIC, 2,
+				ShadowrunAttribute.AGILITY, 1, ShadowrunAttribute.CHARISMA, 1);
+		for (ShadowrunAttribute key : ShadowrunAttribute.primaryAndSpecialValues()) {
+			int expected = attrBefore.get(key) + attrDelta.getOrDefault(key, 0);
+			assertEquals("Attribute "+key, expected, attr(key));
+		}
+
+		// Skills: +1 for every chosen skill
+		Map<String,Integer> skillDelta = Map.of("perception", 3, "con", 2, "astral", 1, "athletics", 1, "influence", 1, "sorcery", 0);
+		for (String id : skillDelta.keySet())
+			assertEquals("Skill "+id, skillBefore.get(id)+skillDelta.get(id), skill(id));
+
+		// Knowledge skills: the childhood area plus the chosen <selmod> options
+		List<String> knowledgeAdded = new ArrayList<>(knowledgeSkills());
+		knowledgeBefore.forEach(knowledgeAdded::remove);
+		assertTrue("Childhood area missing in "+knowledgeBefore, knowledgeBefore.contains("Hamburg"));
+		assertEquals(List.of("Aktuelles Tagesgeschehen", "Arkana", "Moderne Küche", "Spionagetechniken", "Stadtkrieg", "Trideoserien"),
+				knowledgeAdded.stream().sorted().toList());
+
+		// Qualities of all life stages
+		for (String id : List.of("sinner", "charismatic_defense", "allergy", "analytical_mind"))
+			assertTrue("Quality "+id+" missing", model.hasQuality(id));
+
+		// Nuyen: 25000 when coming of age, the modules and the <selmod> of the Stuffer Shack
+		assertEquals(25000 + 25000 + 25000 + 25000+25000 + 0 + 25000 + 25000 + 50000 + 25000, model.getNuyen());
+
+		// Contacts: the connection from coming of age and the points of all stages (4 + modules) minus its 4 points
+		assertEquals(1, model.getContacts().size());
+		assertSame(mentor, model.getContacts().get(0));
+		assertEquals(3, mentor.getRating());
+		assertEquals(1, mentor.getLoyalty());
+		assertEquals(4 + 2+4+4+2+2+2+2+2 - 4, ((SR6ContactGenerator)charGen.getContactController()).getPointsLeft());
+
+		// Everything survives saving and loading
+		Shadowrun6Character loaded = Shadowrun6Core.decode(Shadowrun6Core.encode(model));
+		assertEquals("Gaius", loaded.getName());
+		assertEquals("Born in Hamburg", loaded.getLifepathBabyBackground());
+		assertEquals("Grew up on the streets of Hamburg", loaded.getLifepathChildhoodBackground());
+		assertEquals("Discovered magic at sixteen", loaded.getLifepathComingOfAgeBackground());
+		assertEquals("Worked for a corporation, then went underground", loaded.getLifepathAdultBackground());
+		assertEquals(1, loaded.getContacts().size());
+		assertEquals(mentor.getId(), loaded.getContacts().get(0).getId());
+		assertEquals("Old Mentor", loaded.getContacts().get(0).getName());
+		assertEquals(model.getNuyen(), loaded.getNuyen());
+		assertEquals(model.getKarmaFree(), loaded.getKarmaFree());
+		for (ShadowrunAttribute key : ShadowrunAttribute.primaryAndSpecialValues())
+			assertEquals("Loaded attribute "+key, attr(key), loaded.getAttribute(key).getModifiedValue());
 	}
 }
