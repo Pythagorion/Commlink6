@@ -56,9 +56,11 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 
@@ -79,6 +81,7 @@ public class SR6WizardPageLPAdult extends WizardPage implements ControllerListen
 	private NumberUnitBackHeader backHeader;
 	private Label lbIntro;
 	private Label lbCount;
+	private TextArea taDescription;
 
 	//-------------------------------------------------------------------
 	public SR6WizardPageLPAdult(Wizard wizard, GeneratorWrapper charGen) {
@@ -111,7 +114,17 @@ public class SR6WizardPageLPAdult extends WizardPage implements ControllerListen
 		content = new VBox(10, lbIntro, lbCount);
 		if (selection!=null)
 			content.getChildren().add(selection);
-		layout = new OptionalNodePane(content, bxDescription);
+		// Free text below the module selection, which may be added to content later
+		taDescription = new TextArea();
+		taDescription.setWrapText(true);
+		taDescription.setMaxWidth(450);
+		taDescription.setPrefRowCount(4);
+		taDescription.setPromptText(ResourceI18N.get(RES, "page.adult.prompt"));
+		taDescription.textProperty().addListener( (ov,o,n) -> charGen.getModel().setLifepathAdultBackground(n));
+		VBox bxFluff = new VBox(5, new Label(ResourceI18N.get(RES, "page.adult.summarize")), taDescription);
+		VBox page = new VBox(10, content, bxFluff);
+		VBox.setVgrow(content, Priority.ALWAYS);
+		layout = new OptionalNodePane(page, bxDescription);
 		setContent(layout);
 	}
 
@@ -161,6 +174,9 @@ public class SR6WizardPageLPAdult extends WizardPage implements ControllerListen
 		int maximumModules = modules.getMaximumModules();
 		lbIntro.setText(ResourceI18N.format(RES, "page.adult.intro", maximumModules));
 		lbCount.setText(ResourceI18N.format(RES, "page.adult.count", modules.getSelected().size(), maximumModules));
+		String text = charGen.getModel().getLifepathAdultBackground();
+		if (!(text!=null?text:"").equals(taDescription.getText()))
+			taDescription.setText(text!=null?text:"");
 		if (selection!=null) {
 			selection.setSelectedPlaceholder(ResourceI18N.format(RES, "page.adult.placeholder.selected", maximumModules));
 			selection.refresh();

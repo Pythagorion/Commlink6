@@ -288,7 +288,7 @@ public class SR6WizardPageLPEarlyAdult extends WizardPage implements ControllerL
 	//-------------------------------------------------------------------
 	private void onAddQuality() {
 		IQualityController ctrl = earlyAdult.getQualityController();
-		QualitySelector selector = new QualitySelector(
+		QualitySelector selector = new SearchableQualitySelector(
 				ctrl,
 				Shadowrun6Tools.requirementResolver(Locale.getDefault()),
 				Shadowrun6Tools.modificationResolver(Locale.getDefault())

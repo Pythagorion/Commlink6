@@ -170,7 +170,7 @@ public class SR6WizardPageBornThisWay extends WizardPage implements ControllerLi
 
 	//-------------------------------------------------------------------
 	private void handleSelect(IQualityController ctrl) {
-		QualitySelector selector = new QualitySelector(
+		QualitySelector selector = new SearchableQualitySelector(
 				ctrl,
 				Shadowrun6Tools.requirementResolver(Locale.getDefault()),
 				Shadowrun6Tools.modificationResolver(Locale.getDefault())

@@ -295,3 +295,8 @@
 	-fx-font-size: 200%;
 	-fx-padding: 1em;
 }
+
+/* Selected toggle buttons invert their colors - icons like the trash icon of chosen qualities must follow the text */
+.toggle-button:selected .mini-icon .symbol-icon-text {
+	-fx-fill: -fx-base;
+}

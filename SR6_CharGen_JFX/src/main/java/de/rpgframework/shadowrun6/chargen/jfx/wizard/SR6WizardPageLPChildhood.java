@@ -251,7 +251,7 @@ public class SR6WizardPageLPChildhood extends WizardPage implements ControllerLi
 
 	//-------------------------------------------------------------------
 	private void handleSelect(IQualityController ctrl) {
-		QualitySelector selector = new QualitySelector(
+		QualitySelector selector = new SearchableQualitySelector(
 				ctrl,
 				Shadowrun6Tools.requirementResolver(Locale.getDefault()),
 				Shadowrun6Tools.modificationResolver(Locale.getDefault())
@@ -405,7 +405,7 @@ public class SR6WizardPageLPChildhood extends WizardPage implements ControllerLi
 	private QualityValue onAddQuality(boolean positive) {
 		logger.log(Level.INFO, "onAddQuality");
 		IQualityController ctrl = childhood.getQualityController();
-		QualitySelector selector = new QualitySelector(
+		QualitySelector selector = new SearchableQualitySelector(
 				ctrl,
 				Shadowrun6Tools.requirementResolver(Locale.getDefault()),
 				Shadowrun6Tools.modificationResolver(Locale.getDefault()),
