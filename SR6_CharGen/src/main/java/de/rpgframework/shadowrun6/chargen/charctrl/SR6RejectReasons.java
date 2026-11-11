@@ -53,6 +53,9 @@ public interface SR6RejectReasons extends IRejectReasons {
 	public static final String TODO_CHILDAREA_NOT_SET     = "todo.lifepath.childAreaNotSet";
 	public static final String TODO_EARLY_SKILL_MISSING = "todo.lifepath.early.skill.missing";
 	public static final String TODO_EARLY_ATTRIBUTE_MISSING = "todo.lifepath.early.attribute.missing";
+	public static final String TODO_EARLY_QUALITY_MISSING = "todo.lifepath.early.quality.missing";
+	public static final String TODO_EARLY_CONTACT_MISSING = "todo.lifepath.early.contact.missing";
+	public static final String TODO_EARLY_CONTACT_POINTS = "todo.lifepath.early.contact.points";
 	public static final String TODO_NOT_ENOUGH_LIFEPATH_MODULES = "todo.lifepath.modules.notEnough";
 	public static final String TODO_TOO_MANY_LIFEPATH_MODULES = "todo.lifepath.modules.tooMany";
 	public static final String TODO_LIFEPATH_SELMOD_MISSING = "todo.lifepath.modules.selmodMissing";

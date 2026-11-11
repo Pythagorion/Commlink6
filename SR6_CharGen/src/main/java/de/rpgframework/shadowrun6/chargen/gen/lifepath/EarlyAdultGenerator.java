@@ -16,7 +16,10 @@ import de.rpgframework.genericrpg.data.Decision;
 import de.rpgframework.genericrpg.data.IAttribute;
 import de.rpgframework.genericrpg.modification.Modification;
 import de.rpgframework.genericrpg.modification.ValueModification;
+import de.rpgframework.shadowrun.Contact;
+import de.rpgframework.shadowrun.ContactType;
 import de.rpgframework.shadowrun.Quality;
+import de.rpgframework.shadowrun.QualityValue;
 import de.rpgframework.shadowrun.ShadowrunAttribute;
 import de.rpgframework.shadowrun6.CreatePoints;
 import de.rpgframework.shadowrun6.SR6Quality;
@@ -35,6 +38,11 @@ import de.rpgframework.shadowrun6.modifications.ShadowrunReference;
 public class EarlyAdultGenerator implements PartialController<Quality> {
 
 	protected static Logger logger = System.getLogger(EarlyAdultGenerator.class.getPackageName());
+
+	/** Points to distribute on influence and loyalty of the connection */
+	private final static int CONTACT_POINTS = 4;
+	/** Connection types allowed when coming of age */
+	private final static List<String> CONTACT_TYPES = List.of("ACADEMIC","CORPORATE","MAGIC","MATRIX","MEDIA","MEDICAL","CRIMINAL","GOVERNMENT","STREET","ENGINEERING");
 
 	private SR6LifepathCharacterGenerator parent;
 	protected List<ToDoElement> todos;
@@ -165,9 +173,29 @@ public class EarlyAdultGenerator implements PartialController<Quality> {
 			unprocessed.add(mod);
 		}
 
+		// Qualities
+		SR6Quality quality1 = parent.getSettings().getEarlyAdultQuality1();
+		SR6Quality quality2 = parent.getSettings().getEarlyAdultQuality2();
+		if (quality1==null && quality2==null) {
+			todos.add( new ToDoElement(Severity.STOPPER, SR6RejectReasons.RES, SR6RejectReasons.TODO_EARLY_QUALITY_MISSING));
+		}
+		for (SR6Quality quality : new SR6Quality[] {quality1, quality2}) {
+			if (quality!=null && !getModel().hasQuality(quality.getId())) {
+				logger.log(Level.INFO, "Coming of age quality: {0}", quality);
+				getModel().addQuality(new QualityValue(quality, 1));
+			}
+		}
+
 		int startNuyen = parent.getRuleController().getRuleValueAsInteger(Shadowrun6Rules.CHARGEN_LIFEPATH_START_NUYEN);
 		unprocessed.add(new ValueModification(ShadowrunReference.CREATION_POINTS, CreatePoints.NUYEN.name(), startNuyen));
-		unprocessed.add(new ValueModification(ShadowrunReference.CREATION_POINTS, CreatePoints.CONTACT_POINTS.name(), 4));
+		// Points for the connection from coming of age - it is paid with them like any other contact
+		unprocessed.add(new ValueModification(ShadowrunReference.CREATION_POINTS, CreatePoints.CONTACT_POINTS.name(), CONTACT_POINTS));
+		Contact contact = getContact();
+		if (contact==null) {
+			todos.add( new ToDoElement(Severity.STOPPER, SR6RejectReasons.RES, SR6RejectReasons.TODO_EARLY_CONTACT_MISSING));
+		} else if (contact.getRating()<1 || contact.getLoyalty()<1 || contact.getRating()+contact.getLoyalty()!=CONTACT_POINTS) {
+			todos.add( new ToDoElement(Severity.STOPPER, SR6RejectReasons.RES, SR6RejectReasons.TODO_EARLY_CONTACT_POINTS));
+		}
 		return unprocessed;
 	}
 
@@ -207,13 +235,85 @@ public class EarlyAdultGenerator implements PartialController<Quality> {
 	}
 
 	//-------------------------------------------------------------------
+	/**
+	 * One or two qualities in any combination - other than in childhood, both may also be positive or both negative
+	 */
 	public OneOrTwoQualityController getQualityController() {
 		return new OneOrTwoQualityController(parent,
-				() -> parent.getSettings().getChildhoodQuality1(),
-				 q -> parent.getSettings().setChildhoodQuality1((SR6Quality) q),
-				() -> parent.getSettings().getChildhoodQuality2(),
-				 q -> parent.getSettings().setChildhoodQuality2((SR6Quality) q)
-				 );
+				() -> parent.getSettings().getEarlyAdultQuality1(),
+				 q -> parent.getSettings().setEarlyAdultQuality1((SR6Quality) q),
+				() -> parent.getSettings().getEarlyAdultQuality2(),
+				 q -> parent.getSettings().setEarlyAdultQuality2((SR6Quality) q)
+				 ).setMixedPolarity(false);
+	}
+
+	//-------------------------------------------------------------------
+	/**
+	 * The connection can be of any of these types
+	 */
+	public List<ContactType> getAvailableContactTypes() {
+		return CONTACT_TYPES.stream()
+				.map(id -> Shadowrun6Core.getItem(ContactType.class, id))
+				.filter(type -> type!=null)
+				.toList();
+	}
+
+	//-------------------------------------------------------------------
+	/**
+	 * @return The connection the character has known for a very long time, or NULL
+	 */
+	public Contact getContact() {
+		UUID id = parent.getSettings().getEarlyAdultContact();
+		if (id==null)
+			return null;
+		return getModel().getContacts().stream()
+				.filter(con -> id.equals(con.getId()))
+				.findFirst().orElse(null);
+	}
+
+	//-------------------------------------------------------------------
+	/**
+	 * Create the connection with 2 points each on influence and loyalty.
+	 * If it already exists, it is returned unchanged.
+	 */
+	public Contact createContact(ContactType type) {
+		Contact contact = getContact();
+		if (contact!=null)
+			return contact;
+		if (!getAvailableContactTypes().contains(type))
+			return null;
+		contact = new Contact();
+		contact.setType(type);
+		contact.setRating(2);
+		contact.setLoyalty(CONTACT_POINTS-2);
+		getModel().addContact(contact);
+		parent.getSettings().setEarlyAdultContact(contact.getId());
+		parent.runProcessors();
+		return contact;
+	}
+
+	//-------------------------------------------------------------------
+	public boolean setContactType(ContactType type) {
+		Contact contact = getContact();
+		if (contact==null || !getAvailableContactTypes().contains(type))
+			return false;
+		contact.setType(type);
+		parent.runProcessors();
+		return true;
+	}
+
+	//-------------------------------------------------------------------
+	/**
+	 * Distribute the 4 points: influence as given, the rest goes to loyalty
+	 */
+	public boolean setContactInfluence(int influence) {
+		Contact contact = getContact();
+		if (contact==null || influence<1 || influence>CONTACT_POINTS-1)
+			return false;
+		contact.setRating(influence);
+		contact.setLoyalty(CONTACT_POINTS-influence);
+		parent.runProcessors();
+		return true;
 	}
 
 	public SimpleSkillController getSkillController() {

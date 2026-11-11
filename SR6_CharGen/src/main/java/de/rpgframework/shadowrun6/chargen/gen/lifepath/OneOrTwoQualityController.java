@@ -36,6 +36,8 @@ public class OneOrTwoQualityController extends CommonQualityGenerator implements
 	private Consumer<Quality> qualityAddConsumer;
 	private Consumer<Quality> qualityRemoveConsumer;
 	private Supplier<Integer> maximumSupplier;
+	/** If two qualities are chosen, one must be positive and the other negative */
+	private boolean mixedPolarity = true;
 
 	//-------------------------------------------------------------------
 	public OneOrTwoQualityController(SR6LifepathCharacterGenerator parent,
@@ -57,6 +59,15 @@ public class OneOrTwoQualityController extends CommonQualityGenerator implements
 		this.qualityAddConsumer = qualityAddConsumer;
 		this.qualityRemoveConsumer = qualityRemoveConsumer;
 		this.maximumSupplier = maximumSupplier;
+	}
+
+	//-------------------------------------------------------------------
+	/**
+	 * @param mixed If TRUE (default), two qualities must be one positive and one negative
+	 */
+	public OneOrTwoQualityController setMixedPolarity(boolean mixed) {
+		this.mixedPolarity = mixed;
+		return this;
 	}
 
 	//-------------------------------------------------------------------
@@ -124,7 +135,7 @@ public class OneOrTwoQualityController extends CommonQualityGenerator implements
 			int maximum = getMaximumQualities();
 			if (selected.size()>=maximum)
 				return List.of();
-			if (maximum<=2 && selected.size()==1) {
+			if (mixedPolarity && maximum<=2 && selected.size()==1) {
 				Quality first = selected.get(0);
 				return super.getAvailable().stream()
 						.filter(p -> p.isPositive() == !first.isPositive())
@@ -138,6 +149,8 @@ public class OneOrTwoQualityController extends CommonQualityGenerator implements
 			return super.getAvailable();
 		if (q1!=null && q2!=null)
 			return List.of();
+		if (!mixedPolarity)
+			return super.getAvailable();
 		if (q1!=null)
 			return super.getAvailable().stream()
 					// If you choose two qualities, one must be a positive quality and the other must be a negative quality
@@ -228,7 +241,7 @@ public class OneOrTwoQualityController extends CommonQualityGenerator implements
 		if (chosen.size()>=maximumQualities)
 			return new Possible(ToDoElement.Severity.STOPPER, SR6RejectReasons.RES, SR6RejectReasons.IMPOSS_QUALITY_ALREADY_6, maximumQualities);
 		// If you choose two qualities, one must be a positive quality and the other must be a negative quality
-		if (maximumQualities<=2 && chosen.size()==1 && chosen.get(0).isPositive()==value.isPositive())
+		if (mixedPolarity && maximumQualities<=2 && chosen.size()==1 && chosen.get(0).isPositive()==value.isPositive())
 			return new Possible(ToDoElement.Severity.STOPPER, SR6RejectReasons.RES, SR6RejectReasons.IMPOSS_LIFEPATH_QUALITY_POLARITY);
 		return super.canBeSelected(value, decisions);
 	}

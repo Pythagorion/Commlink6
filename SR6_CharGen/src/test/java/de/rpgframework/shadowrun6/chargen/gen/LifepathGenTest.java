@@ -3,6 +3,8 @@ package de.rpgframework.shadowrun6.chargen.gen;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -19,6 +21,8 @@ import de.rpgframework.genericrpg.data.Decision;
 import de.rpgframework.genericrpg.modification.DataItemModification;
 import de.rpgframework.genericrpg.modification.Modification;
 import de.rpgframework.genericrpg.modification.ModificationChoice;
+import de.rpgframework.shadowrun.Contact;
+import de.rpgframework.shadowrun.ContactType;
 import de.rpgframework.shadowrun.MagicOrResonanceType;
 import de.rpgframework.shadowrun.ShadowrunAttribute;
 import de.rpgframework.shadowrun.SkillType;
@@ -33,6 +37,7 @@ import de.rpgframework.shadowrun6.Shadowrun6Core;
 import de.rpgframework.shadowrun6.Shadowrun6Rules;
 import de.rpgframework.shadowrun6.Shadowrun6Tools;
 import de.rpgframework.shadowrun6.chargen.charctrl.SR6RejectReasons;
+import de.rpgframework.shadowrun6.chargen.gen.lifepath.EarlyAdultGenerator;
 import de.rpgframework.shadowrun6.chargen.gen.lifepath.OneOrTwoQualityController;
 import de.rpgframework.shadowrun6.chargen.gen.lifepath.SR6LifePathModuleGenerator;
 import de.rpgframework.shadowrun6.chargen.gen.lifepath.SR6LifePathSurgeQualityController;
@@ -293,6 +298,99 @@ public class LifepathGenTest {
 
 		assertTrue(charGen.getBornThisWayGenerator().getToDos().stream()
 				.anyMatch(todo -> SR6RejectReasons.TODO_LIFEPATH_QUALITY_POLARITY.equals(todo.getKey())));
+	}
+
+	//-------------------------------------------------------------------
+	/**
+	 * Coming of age: one or two qualities in any combination - unlike childhood both may be positive (or negative)
+	 */
+	@Test
+	public void testComingOfAgeQualitiesMayHaveSamePolarity() {
+		charGen.runProcessors();
+		EarlyAdultGenerator early = charGen.getEarlyAdultGenerator();
+		assertTrue(early.getToDos().stream().anyMatch(todo -> SR6RejectReasons.TODO_EARLY_QUALITY_MISSING.equals(todo.getKey())));
+
+		OneOrTwoQualityController ctrl = early.getQualityController();
+		assertTrue(ctrl.select(quality("ambidextrous")).wasSuccessful());
+		assertTrue("Second positive quality refused", ctrl.select(quality("analytical_mind")).wasSuccessful());
+		assertFalse("Third quality allowed", ctrl.canBeSelected(quality("sinner")).get());
+
+		assertTrue(model.hasQuality("ambidextrous"));
+		assertTrue(model.hasQuality("analytical_mind"));
+		assertFalse(early.getToDos().stream().anyMatch(todo -> SR6RejectReasons.TODO_EARLY_QUALITY_MISSING.equals(todo.getKey())));
+	}
+
+	//-------------------------------------------------------------------
+	/**
+	 * Coming of age: any combination is fine - one positive and one negative as well as two negative
+	 */
+	@Test
+	public void testComingOfAgeQualitiesAnyCombination() {
+		charGen.runProcessors();
+		OneOrTwoQualityController ctrl = charGen.getEarlyAdultGenerator().getQualityController();
+		assertTrue(ctrl.select(quality("ambidextrous")).wasSuccessful());
+		assertTrue("Positive + negative refused", ctrl.select(quality("sinner")).wasSuccessful());
+		assertEquals(2, ctrl.getSelected().size());
+
+		ctrl.deselect(model.getQuality("ambidextrous"));
+		assertTrue("Negative + negative refused", ctrl.select(quality("allergy"),
+				new Decision(quality("allergy").getChoices().get(0).getUUID(),"seasonal"),
+				new Decision(quality("allergy").getChoices().get(1).getUUID(),"mild"),
+				new Decision(quality("allergy").getChoices().get(2).getUUID(),"Pollen")
+				).wasSuccessful());
+		assertEquals(2, ctrl.getSelected().size());
+	}
+
+	//-------------------------------------------------------------------
+	/**
+	 * Coming of age qualities must not overwrite those from childhood
+	 */
+	@Test
+	public void testComingOfAgeQualitiesSeparateFromChildhood() {
+		charGen.runProcessors();
+		assertTrue(charGen.getChildhoodGenerator().getQualityController().select(quality("sinner")).wasSuccessful());
+		assertTrue(charGen.getEarlyAdultGenerator().getQualityController().select(quality("built_tough")).wasSuccessful());
+
+		assertEquals("sinner", charGen.getSettings().getChildhoodQuality1().getId());
+		assertNull(charGen.getSettings().getChildhoodQuality2());
+		assertEquals("built_tough", charGen.getSettings().getEarlyAdultQuality1().getId());
+		assertEquals(1, charGen.getEarlyAdultGenerator().getQualityController().getSelected().size());
+		assertEquals(1, charGen.getChildhoodGenerator().getQualityController().getSelected().size());
+	}
+
+	//-------------------------------------------------------------------
+	/**
+	 * Coming of age: one connection of any type with 4 points on influence and loyalty, each at least 1
+	 */
+	@Test
+	public void testComingOfAgeConnection() {
+		charGen.runProcessors();
+		EarlyAdultGenerator early = charGen.getEarlyAdultGenerator();
+		assertTrue(early.getToDos().stream().anyMatch(todo -> SR6RejectReasons.TODO_EARLY_CONTACT_MISSING.equals(todo.getKey())));
+		assertEquals(10, early.getAvailableContactTypes().size());
+		assertFalse(early.getAvailableContactTypes().stream().anyMatch(type -> type.getId().equals("FREE_SPIRIT") || type.getId().equals("EXISTING")));
+
+		ContactType media = Shadowrun6Core.getItem(ContactType.class, "MEDIA");
+		Contact contact = early.createContact(media);
+		assertNotNull(contact);
+		assertTrue(model.getContacts().contains(contact));
+		assertEquals(4, contact.getRating()+contact.getLoyalty());
+		assertSame("Second connection created", contact, early.createContact(media));
+		assertEquals(1, model.getContacts().size());
+
+		assertTrue(early.setContactInfluence(3));
+		assertEquals(3, contact.getRating());
+		assertEquals(1, contact.getLoyalty());
+		assertFalse("Loyalty 0 allowed", early.setContactInfluence(4));
+		assertFalse("Influence 0 allowed", early.setContactInfluence(0));
+		assertFalse(early.setContactType(Shadowrun6Core.getItem(ContactType.class, "FREE_SPIRIT")));
+		assertEquals("MEDIA", contact.getType().getId());
+		assertFalse(early.getToDos().stream().anyMatch(todo -> todo.getKey().startsWith("todo.lifepath.early.contact")));
+
+		// Changed elsewhere (e.g. on the contacts page)
+		contact.setLoyalty(3);
+		charGen.runProcessors();
+		assertTrue(early.getToDos().stream().anyMatch(todo -> SR6RejectReasons.TODO_EARLY_CONTACT_POINTS.equals(todo.getKey())));
 	}
 
 	//-------------------------------------------------------------------

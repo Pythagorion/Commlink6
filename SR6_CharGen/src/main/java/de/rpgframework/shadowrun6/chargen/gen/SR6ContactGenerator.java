@@ -309,7 +309,7 @@ public class SR6ContactGenerator extends ControllerImpl<Contact> implements SR6C
 			int perContactMax = getModel().getAttribute(ShadowrunAttribute.CHARISMA).getModifiedValue()*2;
 			for (Contact tmp : getModel().getContacts()) {
 				// is sum higher than allowed
-				if ((tmp.getLoyalty()+tmp.getRating())>perContactMax) {
+				if ((tmp.getLoyalty()+tmp.getRating())>perContactMax && !isExemptFromCharismaLimit(tmp)) {
 					if (parent.getRuleController().getRuleValueAsBoolean(Shadowrun6Rules.CHARGEN_EXTENDED_CONTACT)) {
 						int pay = (tmp.getLoyalty() + tmp.getRating()) - perContactMax;
 						logger.log(Level.INFO, "Pay {0} karma (for cap increase of (R={2}/L={3})", pay,
@@ -349,6 +349,14 @@ public class SR6ContactGenerator extends ControllerImpl<Contact> implements SR6C
 			if (logger.isLoggable(Level.TRACE)) logger.log(Level.TRACE, "LEAVE process");
 		}
 		return unprocessed;
+	}
+
+	//-------------------------------------------------------------------
+	/**
+	 * @return TRUE for contacts whose values are fixed by the rules and must not be capped by CHARISMA
+	 */
+	protected boolean isExemptFromCharismaLimit(Contact contact) {
+		return false;
 	}
 
 	//-------------------------------------------------------------------

@@ -77,6 +77,8 @@ public class Shadowrun6Character extends ShadowrunCharacter<SR6Skill, SR6SkillVa
 	@Element
 	private String lifepathChildhoodBackground;
 	@Element
+	private String lifepathComingOfAgeBackground;
+	@Element
 	private String lifepathAdultBackground;
 	@Element
 	private String backgroundNotes;
@@ -608,6 +610,16 @@ public class Shadowrun6Character extends ShadowrunCharacter<SR6Skill, SR6SkillVa
 	//-------------------------------------------------------------------
 	public void setLifepathChildhoodBackground(String lifepathChildhoodBackground) {
 		this.lifepathChildhoodBackground = lifepathChildhoodBackground;
+	}
+
+	//-------------------------------------------------------------------
+	public String getLifepathComingOfAgeBackground() {
+		return lifepathComingOfAgeBackground;
+	}
+
+	//-------------------------------------------------------------------
+	public void setLifepathComingOfAgeBackground(String lifepathComingOfAgeBackground) {
+		this.lifepathComingOfAgeBackground = lifepathComingOfAgeBackground;
 	}
 
 	//-------------------------------------------------------------------

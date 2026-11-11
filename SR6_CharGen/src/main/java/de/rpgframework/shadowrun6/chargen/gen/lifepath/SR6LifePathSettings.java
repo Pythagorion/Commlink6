@@ -2,6 +2,7 @@ package de.rpgframework.shadowrun6.chargen.gen.lifepath;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import de.rpgframework.shadowrun6.LifepathModuleValue;
 import de.rpgframework.shadowrun6.PowerLevel;
@@ -30,6 +31,8 @@ public class SR6LifePathSettings extends CommonSR6GeneratorSettings {
 	private String earlySkill;
 	private ShadowrunAttribute earlyAttribute;
 	private String earlyQual1, earlyQual2;
+	/** ID of the connection gained when coming of age */
+	private String earlyContact;
 	private PowerLevel lifePathDefaultsAppliedFor;
 
 	//-------------------------------------------------------------------
@@ -261,6 +264,40 @@ public class SR6LifePathSettings extends CommonSR6GeneratorSettings {
 	//-------------------------------------------------------------------
 	public void setEarlyAdultSkill(SR6Skill skill) {
 		earlySkill=(skill!=null)?skill.getId():null;
+	}
+
+	//-------------------------------------------------------------------
+	public SR6Quality getEarlyAdultQuality1() {
+		if (earlyQual1 == null) return null;
+		return Shadowrun6Core.getItem(SR6Quality.class, earlyQual1);
+	}
+
+	//-------------------------------------------------------------------
+	public void setEarlyAdultQuality1(SR6Quality value) {
+		if (value==null) this.earlyQual1=null;
+		else this.earlyQual1 = value.getId();
+	}
+
+	//-------------------------------------------------------------------
+	public SR6Quality getEarlyAdultQuality2() {
+		if (earlyQual2 == null) return null;
+		return Shadowrun6Core.getItem(SR6Quality.class, earlyQual2);
+	}
+
+	//-------------------------------------------------------------------
+	public void setEarlyAdultQuality2(SR6Quality value) {
+		if (value==null) this.earlyQual2=null;
+		else this.earlyQual2 = value.getId();
+	}
+
+	//-------------------------------------------------------------------
+	public UUID getEarlyAdultContact() {
+		return (earlyContact!=null)?UUID.fromString(earlyContact):null;
+	}
+
+	//-------------------------------------------------------------------
+	public void setEarlyAdultContact(UUID value) {
+		earlyContact = (value!=null)?value.toString():null;
 	}
 
 	//-------------------------------------------------------------------
